@@ -25,7 +25,7 @@ run_config = CrawlerRunConfig(
 async def scrape(link: str, browser_config, run_config):
     async with AsyncWebCrawler(config=browser_config) as crawler:
         result = await crawler.arun(url=link, config=run_config)
-        print(result.markdown)
+        return result.markdown
 
 def scrape_job_info(link: str):
-    asyncio.run(scrape(link, browser_config, run_config))
+    return asyncio.run(scrape(link, browser_config, run_config))
