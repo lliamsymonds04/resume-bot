@@ -14,8 +14,7 @@ if not jobsite:
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-async def main():
+async def get_jobs(page: int = 1):
     browser_config = BrowserConfig(
         enable_stealth=True,
         headless=False,
@@ -38,13 +37,21 @@ async def main():
         ),
         excluded_tags=["form", "header", "footer", "nav", "ul"],
     )
+
+    website = jobsite
+    if page > 1:
+        # Add page to query
+        website = f"{website}?page={page}"
+
     # Create an instance of AsyncWebCrawler
     async with AsyncWebCrawler(config=browser_config) as crawler:
         # Run the crawler on a URL
-        result = await crawler.arun(url=jobsite, config=run_config)
+        result = await crawler.arun(url=website, config=run_config)
 
         # Print the extracted content
         print(result.markdown)
 
-# Run the async main function
-asyncio.run(main())
+
+if __name__ == "__main__":
+    # Run the async main function
+    asyncio.run(get_jobs(page=1))
