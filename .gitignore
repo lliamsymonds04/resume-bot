@@ -139,3 +139,7 @@ cython_debug/
 .vscode/
 
 texts/
+
+data/me.json
+data/coursework.json
+data/projects.json
