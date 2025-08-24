@@ -6,6 +6,7 @@ def get_text_folder() -> str:
     return "texts"
 
 def append_filename_to_folder(filename: str) -> str:
+    filename = filename if filename.endswith(".txt") else f"{filename}.txt"
     folder = get_text_folder()
     return os.path.join(folder, filename)
 
