@@ -19,7 +19,7 @@ run_config = CrawlerRunConfig(
             "ignore_images": True
         }
     ),
-    excluded_tags=["form", "header", "footer", "nav", "ul"],
+    excluded_tags=["form", "header", "footer", "nav"],
 )
 
 async def scrape(link: str, browser_config, run_config):
@@ -29,3 +29,12 @@ async def scrape(link: str, browser_config, run_config):
 
 def scrape_job_info(link: str):
     return asyncio.run(scrape(link, browser_config, run_config))
+
+if __name__ == "__main__":
+    import os
+    from dotenv import load_dotenv
+    
+    load_dotenv()
+    link = os.getenv("TEST_JOB_LINK")
+    job_info = scrape_job_info(link)
+    print(job_info)
