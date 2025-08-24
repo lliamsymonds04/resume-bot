@@ -3,12 +3,31 @@ from pydantic import BaseModel
 from typing import List
 from langchain_core.output_parsers import PydanticOutputParser
 from llm_config import get_llm
+import datetime
 
 class SkillsResponse(BaseModel):
     skills: List[str]
 
 
-def get_skills() -> list[str]:
+def get_skills(use_cache: bool = True) -> list[str]:
+    now = datetime.datetime.now()
+
+    if use_cache:
+        #check if cache exists
+        try:
+            with open("data/skills_cache.json") as f:
+                # get the date of the cache
+                data = json.load(f)
+                if "date" in data:
+                    cache_date = data["date"]
+                    # convert to datetime
+                    cache_date = datetime.datetime.fromisoformat(cache_date)
+                    if now - cache_date < datetime.timedelta(days=1):
+                        return data["skills"]
+
+        except FileNotFoundError:
+            pass
+
     with open("data/skills.json") as f:
         base_skills = json.load(f)
 
@@ -48,7 +67,14 @@ def get_skills() -> list[str]:
     response = llm.invoke(prompt)
 
     parsed = parser.parse(response.content)
-    return parsed.skills
+
+    skills = parsed.skills
+    
+    # Cache the result
+    with open("data/skills_cache.json", "w") as f:
+        json.dump({"date": now.isoformat(), "skills": skills}, f)
+
+    return skills
 
 if __name__ == "__main__":
     skills = get_skills()
