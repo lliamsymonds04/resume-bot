@@ -20,4 +20,8 @@ else:
 
 llm = get_llm()
 job_d = parse_job_description(job_info, llm)
-tailor_projects(job_d)
+projects = tailor_projects(job_d, 4)
+
+for project in projects:
+    print("----")
+    print(project.model_dump())

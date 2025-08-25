@@ -1,9 +1,11 @@
 import json
+from ai.llm_config import get_llm
 from models.job_description import JobDescription
 from models.project import Project
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_core.output_parsers import PydanticOutputParser
 
 def tailor_projects(job_description: JobDescription, num_projects: int = 3):
     #load the projects json
@@ -33,11 +35,36 @@ def tailor_projects(job_description: JobDescription, num_projects: int = 3):
 
     retrieved_docs = vs.similarity_search(prompt, k=num_projects)
 
+    tailored_projects = []
     for doc in retrieved_docs:
-        print(f"Title: {doc.metadata['title']}")
-        print(f"Description: {doc.metadata['description']}")
-        print()
+        # Expand the project to be more relevant to the job description
+        p = expand_project_for_job(job_description, Project(**doc.metadata))
+        tailored_projects.append(p)
+
+    return tailored_projects
 
 
 def expand_project_for_job(job_description: JobDescription, project: Project):
-    pass
+    llm = get_llm(0.3)
+
+    parser = PydanticOutputParser(pydantic_object=Project)
+    prompt = f"""
+    Given the following job description:
+    {job_description.model_dump()}
+
+    And the project details:
+    {project.model_dump()}
+
+    Expand on the project to make it more relevant to the job description.
+    Do not change the title
+    Do not lie about my skills or process
+    Keep the description concise and focused on the key aspects. It is for a resume
+    Do not talk about external teams or stakeholders if none are mentioned
+
+    Format instructions:
+    {parser.get_format_instructions()}
+    """
+
+    response = llm.invoke(prompt)
+
+    return parser.parse(response.content)
