@@ -1,7 +1,6 @@
 import asyncio
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode, DefaultMarkdownGenerator
 
-
 browser_config = BrowserConfig(
     enable_stealth=True,
     headless=False,
