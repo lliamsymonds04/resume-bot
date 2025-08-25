@@ -1,9 +1,10 @@
 import json
-from pydantic import BaseModel
-from typing import List
-from langchain_core.output_parsers import PydanticOutputParser
-from llm_config import get_llm
 import datetime
+from typing import List
+from pydantic import BaseModel
+from langchain_core.output_parsers import PydanticOutputParser
+from ai.llm_config import get_llm
+from models.job_description import JobDescription
 
 class CategorizedSkillsResponse(BaseModel):
     programming_languages: List[str]
@@ -79,6 +80,30 @@ def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
         json.dump({"date": now.isoformat(), "skills": skills_dict}, f)
 
     # return skills_dict
+    return parsed
+
+def get_relevant_skills(job_description: JobDescription, num_skills: int = 20):
+    skills = get_skills()
+
+    llm = get_llm()
+    
+    parser = PydanticOutputParser(pydantic_object=CategorizedSkillsResponse)
+    
+    prompt = f"""
+    Job Description: {job_description.model_dump()}
+    Also consider that i am applying for fullstack software engineer positions
+    
+    Available Skills: {skills.model_dump()}
+    
+    Prune the available skills to match the job description for use in a resume.
+    List the skills in order of relevance 
+    
+    {parser.get_format_instructions()}
+    """
+    
+    response = llm.invoke(prompt)
+    parsed = parser.parse(response.content)
+    
     return parsed
 
 if __name__ == "__main__":

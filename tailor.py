@@ -20,8 +20,15 @@ else:
 
 llm = get_llm()
 job_d = parse_job_description(job_info, llm)
-projects = tailor_projects(job_d, 4)
+# projects = tailor_projects(job_d, 4)
 
-for project in projects:
-    print("----")
-    print(project.model_dump())
+# for project in projects:
+#     print("----")
+#     print(project.model_dump())
+
+from ai.get_skills import get_relevant_skills
+relevant_skills = get_relevant_skills(job_d, 20)
+for category, skills in relevant_skills.model_dump().items():
+    print(f"{category}:")
+    for skill in skills:
+        print(f" - {skill}")
