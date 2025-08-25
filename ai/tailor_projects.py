@@ -1,5 +1,6 @@
 import json
 from models.job_description import JobDescription
+from models.project import Project
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -7,14 +8,16 @@ from langchain_community.vectorstores import FAISS
 def tailor_projects(job_description: JobDescription, num_projects: int = 3):
     #load the projects json
     with open("data/projects.json", "r") as f:
-        projects_data = json.load(f)
+        projects_raw = json.load(f)
+
+    projects_data = [Project(**proj) for proj in projects_raw]
 
     project_docs = []
     for project in projects_data:
         # Combine title and description for better matching
-        content = f"Title: {project['title']}\nDescription: {project['description']}"
+        content = f"Title: {project.title}\nDescription: {project.description}"
         # Store the full project data in metadata
-        doc = Document(page_content=content, metadata=project)
+        doc = Document(page_content=content, metadata=project.model_dump())
         project_docs.append(doc)
 
     # embeddings = OpenAIEmbeddings()
@@ -34,3 +37,7 @@ def tailor_projects(job_description: JobDescription, num_projects: int = 3):
         print(f"Title: {doc.metadata['title']}")
         print(f"Description: {doc.metadata['description']}")
         print()
+
+
+def expand_project_for_job(job_description: JobDescription, project: Project):
+    pass
