@@ -1,17 +1,10 @@
-
-from typing import Optional
+from models.job_listing import JobListing
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel
 from ai.llm_config import get_llm
 
 
-class JobListing(BaseModel):
-    title: str
-    link: str
-    company: Optional[str]
-    location: Optional[str]
-    description: Optional[str]
-    days_listed: Optional[int]
+
 
 class JobListingsResponse(BaseModel):
     jobs: list[JobListing]
