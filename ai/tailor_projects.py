@@ -9,8 +9,6 @@ def tailor_projects(job_description: JobDescription, num_projects: int = 3):
     with open("data/projects.json", "r") as f:
         projects_data = json.load(f)
 
-    # print(projects_data)
-
     project_docs = []
     for project in projects_data:
         # Combine title and description for better matching
