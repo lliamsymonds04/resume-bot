@@ -1,3 +1,4 @@
+# from asyncio import subprocess
 import json
 from ai.parse_job_description import parse_job_description
 from ai.get_skills import get_relevant_skills
@@ -20,7 +21,7 @@ def create_resume_filling_prompt():
     Creates the ChatPromptTemplate for filling the Typst resume.
     """
     prompt = ChatPromptTemplate.from_template("""
-        You are a resume-tailoring expert. Your task is to fill a Typst resume template with professional information tailored specifically for a given job description.
+        You are a resume-tailoring expert for ATS. Your task is to fill a markdown resume template with professional information tailored specifically for a given job description.
 
         ---
 
@@ -40,31 +41,37 @@ def create_resume_filling_prompt():
 
         **Instructions:**
 
-        1.  **Goal:** Generate a single, complete Typst function call to `resume-template()` with all arguments populated.
+        1.  **Goal:** Generate a markdown resume.
         2.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
-        3.  **Experience:** For each experience entry in "My Data," rewrite the bullet points to align with the job's requirements and keywords. Focus on quantifiable achievements.
-            if you cannot find any experience do not list it
+        3.  **Education:** Populate the `education` array with the relevant information from "My Data."
         4.  **Skills:** Populate the `skills` array with the provided "Relevant Skills."
         5.  **Projects:** Populate the `projects` array with the provided "Tailored Projects."
         6.  **Do NOT:**
             -   Add any extra text, explanations, or markdown outside of the `resume-template()` function call.
             -   Invent or hallucinate any information not present in the provided data.
-            -   Change the structure of the `resume-template()` function call.
-            -   Encapsulate the output in a markdown code block.
-
-        escape special characters for formatting like # and @
 
         ---
 
         **Expected Output:**
 
-        Provide only the `resume-template(...)` function call with the correct Typst syntax and arguments filled with the tailored information.
+        Provide only the markdown with the arguments filled with the tailored information.
         """)
 
     return prompt
 
+def remove_code_block(text: str) -> str:
+    lines = text.strip().split('\n')
+
+    # Check if the first and last lines are markdown code block delimiters
+    if lines[0].startswith("```") and lines[-1] == "```":
+        # Remove the first and last lines to get the pure code
+        clean_content = "\n".join(lines[1:-1])
+    else:
+        clean_content = text
+
+    return clean_content
+
 def fill_resume(job_description: JobDescription):
-    template = load_resume_template()
     # Here you would add logic to fill in the template with user data
 
     # get the relevant skills
@@ -85,11 +92,14 @@ def fill_resume(job_description: JobDescription):
         "relevant_skills": relevant_skills,
         "tailored_projects": tailored_projects
     }
+    
+    print(prompt)
 
     llm = get_llm(0.3, "good")
     resume_chain = prompt | llm | StrOutputParser()
 
     result = resume_chain.invoke(input_data)
+    result = remove_code_block(result)
     return result
 
 if __name__ == "__main__":
@@ -107,9 +117,14 @@ if __name__ == "__main__":
     result = fill_resume(job_d)
     print(result)
 
-    with open("resume/generated_resume.typ", "w", encoding="utf-8") as f:
+    #save the file
+    with open("resume/generated_resume.md", "w", encoding="utf-8") as f:
         f.write(result)
 
+    # convert the markdown to pdf
     import subprocess
-
-    subprocess.run(["typst", "compile", "resume/generated_resume.typ", "resume/generated_resume.pdf"], check=True)
+    subprocess.run([
+        "pandoc",
+        "resume/generated_resume.md",
+        "-o", "resume/generated_resume.pdf"
+    ], check=True)

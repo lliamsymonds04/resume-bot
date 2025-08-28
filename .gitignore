@@ -146,3 +146,5 @@ data/projects.json
 data/skills.json
 data/experience.json
 data/skills_cache.json
+
+output/
