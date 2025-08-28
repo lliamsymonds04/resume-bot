@@ -120,22 +120,22 @@ def fix_resume_formatting(resume: str) -> str:
     return remove_code_block(result)
 
 if __name__ == "__main__":
-    import os
-    if os.path.exists("texts/job_info.txt"):
-        with open("texts/job_info.txt", "r") as f:
-            job_info = load_text("job_info")
-    else:
-        raise ValueError("No job info found, please run tailor.py first")
+    # import os
+    # if os.path.exists("texts/job_info.txt"):
+    #     with open("texts/job_info.txt", "r") as f:
+    #         job_info = load_text("job_info")
+    # else:
+    #     raise ValueError("No job info found, please run tailor.py first")
 
-    llm = get_llm()
-    job_d = parse_job_description(job_info, llm)
+    # llm = get_llm()
+    # job_d = parse_job_description(job_info, llm)
 
-    result = fill_resume(job_d)
-    result = fix_resume_formatting(result)
+    # result = fill_resume(job_d)
+    # result = fix_resume_formatting(result)
 
-    #save the file
-    with open("output/generated_resume.md", "w", encoding="utf-8") as f:
-        f.write(result)
+    # #save the file
+    # with open("output/generated_resume.md", "w", encoding="utf-8") as f:
+    #     f.write(result)
 
     # convert the markdown to pdf
     import subprocess
@@ -146,5 +146,6 @@ if __name__ == "__main__":
         "-V", "geometry:margin=1in",
         "-V", "fontsize=10pt",
         "-V", "geometry:top=0.5in",
-        "-V", "mainfont=Garamond"
+        "-V", "mainfont=Garamond",
+        "-V", "pagestyle=empty"
     ], check=True)
