@@ -45,9 +45,9 @@ def create_resume_filling_prompt():
         2.  Make the header my name
         2.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
         3.  **Education:** Populate the `education` array with the relevant information from "My Data."
-        4.  **Skills:** Populate the `skills` array with the provided "Relevant Skills."
+        4.  **Skills:** make dotpoints containing the relevant skills categorised. Fill them horizontally to save space 
         5.  **Projects:** Populate the `projects` array with the provided "Tailored Projects."
-        6.  Use --- to separate the sections.
+        6.  Use \hrulefill to separate the sections.
         7.  Format my details in one line and embedded the websites.
         8.  **Do NOT:**
             -   Add any extra text, explanations, or markdown.
@@ -107,10 +107,10 @@ def fill_resume(job_description: JobDescription):
 
 def fix_resume_formatting(resume: str) -> str:
     prompt = ChatPromptTemplate.from_template("""
-    Here is my resume in markdown. Fix any spacing or syntax errors.
+    Here is my resume in markdown. Fix any spacing or syntax errors. Do not remove horizontal lines
     
     {resume}
-    return the markdown resume fixed
+    return the markdown resume fixed. Do not comment on what you changed, only return the resume.
     """)
 
     llm = get_llm(0, "light")
