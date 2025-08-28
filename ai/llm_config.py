@@ -2,7 +2,7 @@ from langchain_groq import ChatGroq
 import os
 
 #get the model
-model_name = os.getenv("MODEL_NAME")
+model_name = os.getenv("LIGHT_MODEL_NAME")
 api_key = os.getenv("GROQ_API_KEY")
 
 def get_llm(temperature: int = 0) -> ChatGroq:
