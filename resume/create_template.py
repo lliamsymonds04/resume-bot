@@ -23,6 +23,8 @@ def create_resume_template(header_elements: list[str], sections: list[str]):
         - Use Typst's markup syntax correctly, including show rules for formatting.
         - Ensure there are no syntax errors and the code is well-structured.
         - Provide only the Typst code and nothing else.
+
+        Generate only the Typst code for the resume template. The output should be a single, complete block of Typst code without any surrounding markdown syntax, comments, or explanations
     """)
 
     # Construct the correct chain
@@ -32,8 +34,40 @@ def create_resume_template(header_elements: list[str], sections: list[str]):
     return result
 
 
-def save_typst_template(template_content: str, filename: str = "resume_template.typ"):
+def save_typst_template(template_content: str, filename: str = "resume/resume_template.typ"):
+    # Split the string by newlines
+    lines = template_content.strip().split('\n')
+    
+    # Check if the first and last lines are markdown code block delimiters
+    if lines[0].startswith("```typst") and lines[-1] == "```":
+        # Remove the first and last lines to get the pure code
+        clean_content = "\n".join(lines[1:-1])
+    else:
+        # If no markdown block is found, use the content as is
+        clean_content = template_content
+
     with open(filename, 'w', encoding='utf-8') as f:
-        f.write(template_content)
+        f.write(clean_content)
     print(f"Template saved to {filename}")
     return filename
+    
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    header_elements = [
+        "Name",
+        "Contact Information",
+        "LinkedIn Profile",
+        "GitHub Profile"
+    ]
+
+    sections = [
+        "Summary",
+        "Experience",
+        "Education",
+        "Skills"
+    ]
+
+    template = create_resume_template(header_elements, sections)
+    save_typst_template(template)
