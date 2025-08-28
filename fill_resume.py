@@ -42,12 +42,15 @@ def create_resume_filling_prompt():
         **Instructions:**
 
         1.  **Goal:** Generate a markdown resume.
+        2.  Make the header my name
         2.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
         3.  **Education:** Populate the `education` array with the relevant information from "My Data."
         4.  **Skills:** Populate the `skills` array with the provided "Relevant Skills."
         5.  **Projects:** Populate the `projects` array with the provided "Tailored Projects."
-        6.  **Do NOT:**
-            -   Add any extra text, explanations, or markdown outside of the `resume-template()` function call.
+        6.  Use --- to separate the sections.
+        7.  Format my details in one line and embedded the websites.
+        8.  **Do NOT:**
+            -   Add any extra text, explanations, or markdown.
             -   Invent or hallucinate any information not present in the provided data.
 
         ---
@@ -71,9 +74,7 @@ def remove_code_block(text: str) -> str:
 
     return clean_content
 
-def fill_resume(job_description: JobDescription):
-    # Here you would add logic to fill in the template with user data
-
+def get_input_data(job_description: JobDescription):
     # get the relevant skills
     relevant_skills = get_relevant_skills(job_description)
 
@@ -84,16 +85,18 @@ def fill_resume(job_description: JobDescription):
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
 
-    prompt = create_resume_filling_prompt()
-    
     input_data = {
         "job_description": job_description,
         "my_data": me_data,
         "relevant_skills": relevant_skills,
         "tailored_projects": tailored_projects
     }
-    
-    print(prompt)
+
+    return input_data
+
+def fill_resume(job_description: JobDescription):
+    prompt = create_resume_filling_prompt()
+    input_data = get_input_data(job_description)
 
     llm = get_llm(0.3, "good")
     resume_chain = prompt | llm | StrOutputParser()
@@ -102,11 +105,24 @@ def fill_resume(job_description: JobDescription):
     result = remove_code_block(result)
     return result
 
+def fix_resume_formatting(resume: str) -> str:
+    prompt = ChatPromptTemplate.from_template("""
+    Here is my resume in markdown. Fix any spacing or syntax errors.
+    
+    {resume}
+    return the markdown resume fixed
+    """)
+
+    llm = get_llm(0, "light")
+    fix_chain = prompt | llm | StrOutputParser()
+    result = fix_chain.invoke({"resume": resume})
+
+    return remove_code_block(result)
+
 if __name__ == "__main__":
     import os
     if os.path.exists("texts/job_info.txt"):
         with open("texts/job_info.txt", "r") as f:
-            # job_info = f.read()
             job_info = load_text("job_info")
     else:
         raise ValueError("No job info found, please run tailor.py first")
@@ -115,16 +131,20 @@ if __name__ == "__main__":
     job_d = parse_job_description(job_info, llm)
 
     result = fill_resume(job_d)
-    print(result)
+    result = fix_resume_formatting(result)
 
     #save the file
-    with open("resume/generated_resume.md", "w", encoding="utf-8") as f:
+    with open("output/generated_resume.md", "w", encoding="utf-8") as f:
         f.write(result)
 
     # convert the markdown to pdf
     import subprocess
     subprocess.run([
         "pandoc",
-        "resume/generated_resume.md",
-        "-o", "resume/generated_resume.pdf"
+        "output/generated_resume.md",
+        "-o", "output/generated_resume.pdf",
+        "-V", "geometry:margin=1in",
+        "-V", "fontsize=10pt",
+        "-V", "geometry:top=0.5in",
+        "-V", "mainfont=Garamond"
     ], check=True)
