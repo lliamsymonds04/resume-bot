@@ -39,6 +39,9 @@ def create_resume_filling_prompt():
         **Tailored Projects:**
         {tailored_projects}
 
+        **Coursework:**
+        {coursework}
+
         **Instructions:**
 
         **Goal:** Generate a markdown resume.
@@ -46,7 +49,7 @@ def create_resume_filling_prompt():
         2.  Format my contact details in one line and embedded the websites. Make the text for my website not have https or www.
         3.  Add \hrulefill to separte contact and the below sections
         4.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
-        5.  **Education:** Populate the `education` array with the relevant information from "My Data."
+        5.  **Education:** Populate the `education` array with the relevant information from "My Data.". Include a summary of relevant coursework i have completed
         6.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
         7.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
         8.  Always use \hrulefill to separate each sections.
@@ -86,11 +89,16 @@ def get_input_data(job_description: JobDescription):
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
 
+    # load coursework
+    with open("data/coursework.json", 'r', encoding='utf-8') as f:
+        coursework = json.load(f)
+
     input_data = {
         "job_description": job_description,
         "my_data": me_data,
         "relevant_skills": relevant_skills,
-        "tailored_projects": tailored_projects
+        "tailored_projects": tailored_projects,
+        "coursework": coursework
     }
 
     return input_data
@@ -136,7 +144,6 @@ def save_resume(resume: str, job_description: JobDescription):
     ], check=True)
 
     
-
 if __name__ == "__main__":
     import os
     if os.path.exists("texts/job_info.txt"):
