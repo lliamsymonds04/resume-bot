@@ -1,5 +1,5 @@
-# from asyncio import subprocess
 import json
+import subprocess
 from ai.parse_job_description import parse_job_description
 from ai.get_skills import get_relevant_skills
 from ai.llm_config import get_llm
@@ -41,14 +41,14 @@ def create_resume_filling_prompt():
 
         **Instructions:**
 
-        1.  **Goal:** Generate a markdown resume.
-        2.  Make the header my name
-        2.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
-        3.  **Education:** Populate the `education` array with the relevant information from "My Data."
-        4.  **Skills:** make dotpoints containing the relevant skills categorised. Fill them horizontally to save space 
-        5.  **Projects:** Populate the `projects` array with the provided "Tailored Projects."
-        6.  Use \hrulefill to separate the sections.
-        7.  Format my details in one line and embedded the websites.
+        **Goal:** Generate a markdown resume.
+        1.  Make the header my name
+        2.  Format my contact details in one line and embedded the websites.
+        3.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
+        4.  **Education:** Populate the `education` array with the relevant information from "My Data."
+        5.  **Skills:** make dotpoints containing the relevant skills categorised. Fill them horizontally to save space 
+        6.  **Projects:** Populate the `projects` array with the provided "Tailored Projects."
+        7.  Use \hrulefill to separate the sections.
         8.  **Do NOT:**
             -   Add any extra text, explanations, or markdown.
             -   Invent or hallucinate any information not present in the provided data.
@@ -119,26 +119,10 @@ def fix_resume_formatting(resume: str) -> str:
 
     return remove_code_block(result)
 
-if __name__ == "__main__":
-    # import os
-    # if os.path.exists("texts/job_info.txt"):
-    #     with open("texts/job_info.txt", "r") as f:
-    #         job_info = load_text("job_info")
-    # else:
-    #     raise ValueError("No job info found, please run tailor.py first")
-
-    # llm = get_llm()
-    # job_d = parse_job_description(job_info, llm)
-
-    # result = fill_resume(job_d)
-    # result = fix_resume_formatting(result)
-
-    # #save the file
-    # with open("output/generated_resume.md", "w", encoding="utf-8") as f:
-    #     f.write(result)
-
-    # convert the markdown to pdf
-    import subprocess
+def save_resume(resume: str, job_description: JobDescription):
+    with open("output/generated_resume.md", "w", encoding="utf-8") as f:
+        f.write(resume)
+        
     subprocess.run([
         "pandoc",
         "output/generated_resume.md",
@@ -149,3 +133,22 @@ if __name__ == "__main__":
         "-V", "mainfont=Garamond",
         "-V", "pagestyle=empty"
     ], check=True)
+
+    
+
+if __name__ == "__main__":
+    import os
+    if os.path.exists("texts/job_info.txt"):
+        with open("texts/job_info.txt", "r") as f:
+            job_info = load_text("job_info")
+    else:
+        raise ValueError("No job info found, please run tailor.py first")
+
+    llm = get_llm()
+    job_d = parse_job_description(job_info, llm)
+
+    result = fill_resume(job_d)
+    result = fix_resume_formatting(result)
+
+    #save the file
+    save_resume(result, job_d)
