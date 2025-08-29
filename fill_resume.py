@@ -8,8 +8,7 @@ from models.job_description import JobDescription
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from scraping.scrape_job_info import scrape_job_info
-from util.text_util import load_text, save_text
+from util.text_util import load_text
 
 
 def load_resume_template(filename: str = "resume/resume_template.typ"):
