@@ -43,7 +43,7 @@ def create_resume_filling_prompt():
 
         **Goal:** Generate a markdown resume.
         1.  Make the header my name. Make sure to add a space between the markdown then add a new line
-        2.  Format my contact details in one line and embedded the websites.
+        2.  Format my contact details in one line and embedded the websites. Make the text for my website not have https or www.
         3.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
         4.  **Education:** Populate the `education` array with the relevant information from "My Data."
         5.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space 
