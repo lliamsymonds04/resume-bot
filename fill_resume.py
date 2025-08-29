@@ -42,15 +42,15 @@ def create_resume_filling_prompt():
         **Instructions:**
 
         **Goal:** Generate a markdown resume.
-        1.  Make the header my name. Make sure to add a space between the markdown then add a new line
+        1.  Make the title my name. Make sure to add a space between the markdown then add a new line.
         2.  Format my contact details in one line and embedded the websites. Make the text for my website not have https or www.
-        3.  Add \hruefill to separte contact and the below sections
-        3.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
-        4.  **Education:** Populate the `education` array with the relevant information from "My Data."
-        5.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space 
-        6.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
-        7.  Always use \hrulefill to separate each sections.
-        8.  **Do NOT:**
+        3.  Add \hrulefill to separte contact and the below sections
+        4.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
+        5.  **Education:** Populate the `education` array with the relevant information from "My Data."
+        6.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
+        7.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
+        8.  Always use \hrulefill to separate each sections.
+        9.  **Do NOT:**
             -   Add any extra text, explanations, or images or embedded images.
             -   Invent or hallucinate any information not present in the provided data.
 
