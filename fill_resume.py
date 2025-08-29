@@ -47,7 +47,7 @@ def create_resume_filling_prompt():
         3.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
         4.  **Education:** Populate the `education` array with the relevant information from "My Data."
         5.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space 
-        6.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints and put the links on a new line, horizontally
+        6.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
         7.  Always use \hrulefill to separate each sections.
         8.  **Do NOT:**
             -   Add any extra text, explanations, or images or embedded images.
