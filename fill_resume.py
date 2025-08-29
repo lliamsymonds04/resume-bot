@@ -47,8 +47,10 @@ def create_resume_filling_prompt():
         **Goal:** Generate a markdown resume.
         1.  Make the title my name. Make sure to add a space between the markdown then add a new line.
         2.  Format my contact details in one line and embedded the websites. Make the text for my website not have https or www.
-        3.  Add \hrulefill to separte contact and the below sections
+            (email, phone number, website, linkedin)
+        3.  Add \hrulefill to separate contact and the below sections
         4.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
+            Do not directly mention the company or the position title.
         5.  **Education:** Populate the `education` array with the relevant information from "My Data.". Include a summary of relevant coursework i have completed. Change it to fit the job description.
         6.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
         7.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
@@ -69,7 +71,7 @@ def create_resume_filling_prompt():
 def remove_code_block(text: str) -> str:
     lines = text.strip().split('\n')
 
-    # Check if the first and last lines are markdown code block delimiters
+    # Check if the first and last lines are code block delimiters
     if lines[0].startswith("```") and lines[-1] == "```":
         # Remove the first and last lines to get the pure code
         clean_content = "\n".join(lines[1:-1])
