@@ -10,7 +10,7 @@ class CategorizedSkillsResponse(BaseModel):
     programming_languages: List[str]
     frameworks_libraries: List[str] 
     tools: List[str]
-    soft_skills: List[str]
+    professional_skills: List[str]
     education_certifications: List[str]
 
 
@@ -61,10 +61,10 @@ def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
     Me: {me}
     
     Categorize skills into:
-    - programming_languages: .
-    - frameworks_libraries: .
+    - programming_languages: Include all my programming languages 
+    - frameworks_libraries: React, .NET, Pytorch etc.
     - tools: SQL, MongoDB, Docker, AWS, Git, Jira, etc.
-    - soft_skills: From every thing stated determine all the soft skills i have. i am excellent.
+    - professional_skills: From every thing stated determine all the soft skills i have. i am excellent.
     - education_certifications: Degrees, certificates, etc.
     
     {parser.get_format_instructions()}
@@ -97,7 +97,9 @@ def get_relevant_skills(job_description: JobDescription, num_skills: int = 20):
     
     Prune the available skills to match the job description for use in a resume.
     List the skills in order of relevance 
+    List all my programming languages
     
+    Format the skills as:
     {parser.get_format_instructions()}
     """
     
