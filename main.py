@@ -1,4 +1,5 @@
 from prompt_toolkit.application import Application
+from screens.find_jobs_screen import FindJobsScreen
 from screens.landing_screen import LandingScreen
 from screens.config_screen import ConfigScreen
 
@@ -25,10 +26,12 @@ app_state = AppState(app)
 # screens
 landing_screen = LandingScreen()
 config_screen = ConfigScreen()
+find_jobs_screen = FindJobsScreen()
 
 # add screens
 app_state.add_screen(landing_screen)
 app_state.add_screen(config_screen)
+app_state.add_screen(find_jobs_screen)
 
 # init
 app_state.switch_screen("landing")

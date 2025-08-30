@@ -1,8 +1,6 @@
-from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
-
 from screens.screen_base import Screen
 
 line_len = 70
@@ -15,7 +13,7 @@ ascii_art = r"""__________                                     __________       
         \/     \/     \/            \/     \/          \/             """
 ascii_art += "\n" + "="*line_len + "\n"
 
-options = ["Config", "Seek", "Something else idk"]
+options = ["Config", "Find Jobs", "Something else idk"]
 
 class LandingScreen(Screen):
     def __init__(self):
@@ -67,8 +65,8 @@ class LandingScreen(Screen):
             selected_option = options[self.state["selection"]]
             if selected_option == "Config":
                 app_state.switch_screen("config")
-            # elif selected_option == "Seek":
-            #     app_state.switch_screen("seek")
+            elif selected_option == "Find Jobs":
+                app_state.switch_screen("find_jobs")
             else:
                 pass
 
