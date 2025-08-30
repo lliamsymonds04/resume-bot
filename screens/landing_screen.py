@@ -62,4 +62,14 @@ class LandingScreen(Screen):
             self.control.text = self.render()
             event.app.invalidate()
 
+        @kb.add("enter")
+        def _(event):
+            selected_option = options[self.state["selection"]]
+            if selected_option == "Config":
+                app_state.switch_screen("config")
+            # elif selected_option == "Seek":
+            #     app_state.switch_screen("seek")
+            else:
+                pass
+
         return kb

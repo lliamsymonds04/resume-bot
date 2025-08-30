@@ -1,5 +1,6 @@
 from prompt_toolkit.application import Application
 from screens.landing_screen import LandingScreen
+from screens.config_screen import ConfigScreen
 
 class AppState:
     def __init__(self, app):
@@ -21,9 +22,14 @@ class AppState:
 app = Application(full_screen=True)
 app_state = AppState(app)
 
+# screens
 landing_screen = LandingScreen()
-app_state.add_screen(landing_screen)
+config_screen = ConfigScreen()
 
-# Make sure you're passing the **instance**, not the class
+# add screens
+app_state.add_screen(landing_screen)
+app_state.add_screen(config_screen)
+
+# init
 app_state.switch_screen("landing")
 app.run()
