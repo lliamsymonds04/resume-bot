@@ -37,10 +37,7 @@ jobs = [
 
 def get_job_text(job: JobDescription):
     lines = [
-        f"Title: {job.title}",
-        f"Company: {job.company or 'N/A'}",
-        f"Location: {job.location or 'N/A'}",
-        f"Salary: {job.salary or 'N/A'}",
+        f"Title: {job.title} | Company: {job.company or 'N/A'} | Location: {job.location or 'N/A'} | Salary: {job.salary or 'N/A'}",
         "",
         "Responsibilities:",
     ] + [f"  - {r}" for r in job.responsibilities] + [
@@ -60,14 +57,13 @@ class FindJobsScreen(Screen):
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.jobs: list[JobDescription] = []
         self.jobs = jobs  # temp for now
-        self.current_job_index = 0  # Track which job we're viewing
+        self.current_job_index = 0 
     
     def render(self):
         frags = []
         
         frags.append(("", ascii_art))
         frags.append(("", "\n" + "="*self.line_len + "\n"))
-        frags.append(("", "Find Jobs\n\n"))
 
         if not self.jobs:
             return [("", "No jobs found.")]
@@ -82,7 +78,10 @@ class FindJobsScreen(Screen):
         nav_info = f"\nJob {self.current_job_index + 1} of {len(self.jobs)}"
         nav_help = "\nPress 'j' for next job, 'k' for previous job, 'q' to go back"
         
-        frags.append(("", job_text + nav_info + nav_help))
+        frags.append(("", job_text + "\n"))
+        frags.append(("", "\n" + "="*self.line_len))
+        frags.append(("", (nav_info + nav_help)))
+
         return frags
        
     def layout(self):
