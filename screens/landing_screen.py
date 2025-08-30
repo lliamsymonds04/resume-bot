@@ -45,17 +45,6 @@ class LandingScreen(Screen):
         def _(event):
             event.app.exit()
 
-        # @kb.add("j")
-        # def _(event):
-        #     self.state["selection"] = (self.state["selection"] + 1) % len(options)
-        #     self.control.text = self.render()
-        #     event.app.invalidate()
-
-        # @kb.add("k")
-        # def _(event):
-        #     self.state["selection"] = (self.state["selection"] - 1) % len(options)
-        #     self.control.text = self.render()
-        #     event.app.invalidate()
         self.bind_move_options(kb)
 
         @kb.add("enter")
