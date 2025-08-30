@@ -11,9 +11,6 @@ ascii_art = r"""__________                                     __________       
  |    |   \  ___/ \___ \|  |  /  Y Y  \  ___/   |    |   (  <_> )  |  
  |____|_  /\___  >____  >____/|__|_|  /\___  >  |______  /\____/|__|  
         \/     \/     \/            \/     \/          \/             """
-# ascii_art += "\n" + "="*line_len + "\n"
-
-options = ["Config", "Find Jobs", "Something else idk"]
 
 class LandingScreen(Screen):
     def __init__(self):
@@ -21,8 +18,7 @@ class LandingScreen(Screen):
         self.control = FormattedTextControl(self.render, focusable=True)
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.state = {"selection": 0}
-
-        # ascii_art += "\n" + "="*super().line_len + "\n"
+        self.options = ["Config", "Find Jobs", "Something else idk"]
 
     def render(self):
         frags = []
@@ -32,13 +28,11 @@ class LandingScreen(Screen):
         frags.append(("", "Options:\n"))
 
         # render options
-        for i, option in enumerate(options):
-            prefix = "👉 " if i == self.state["selection"] else "   "
-            style = "reverse" if i == self.state["selection"] else ""
-            frags.append((style, f"{prefix}{option}\n"))
+        rendered_options = self.render_options()
+        frags.extend(rendered_options)
 
-        frags.append(("", "\n" + "="*line_len))
-        frags.append(("", "\n[j] down, [k] up, [enter] select, [q] quit.\n"))
+        controls = self.get_default_controls()
+        frags.extend(controls)
         return frags
 
     def layout(self):
@@ -51,21 +45,22 @@ class LandingScreen(Screen):
         def _(event):
             event.app.exit()
 
-        @kb.add("j")
-        def _(event):
-            self.state["selection"] = (self.state["selection"] + 1) % len(options)
-            self.control.text = self.render()
-            event.app.invalidate()
+        # @kb.add("j")
+        # def _(event):
+        #     self.state["selection"] = (self.state["selection"] + 1) % len(options)
+        #     self.control.text = self.render()
+        #     event.app.invalidate()
 
-        @kb.add("k")
-        def _(event):
-            self.state["selection"] = (self.state["selection"] - 1) % len(options)
-            self.control.text = self.render()
-            event.app.invalidate()
+        # @kb.add("k")
+        # def _(event):
+        #     self.state["selection"] = (self.state["selection"] - 1) % len(options)
+        #     self.control.text = self.render()
+        #     event.app.invalidate()
+        self.bind_move_options(kb)
 
         @kb.add("enter")
         def _(event):
-            selected_option = options[self.state["selection"]]
+            selected_option = self.options[self.state["selection"]]
             if selected_option == "Config":
                 app_state.switch_screen("config")
             elif selected_option == "Find Jobs":
