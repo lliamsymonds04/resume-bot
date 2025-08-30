@@ -1,34 +1,29 @@
-from prompt_toolkit import Application
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.layout import Layout, HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.application import Application
+from screens.landing_screen import LandingScreen
 
-ascii_art = r"""__________                                     __________        __   
-\______   \ ____   ________ __  _____   ____   \______   \ _____/  |_ 
- |       _// __ \ /  ___/  |  \/     \_/ __ \   |    |  _//  _ \   __\
- |    |   \  ___/ \___ \|  |  /  Y Y  \  ___/   |    |   (  <_> )  |  
- |____|_  /\___  >____  >____/|__|_|  /\___  >  |______  /\____/|__|  
-        \/     \/     \/            \/     \/          \/             """
-ascii_art += "\n" + "="*70 + "\n"
+class AppState:
+    def __init__(self, app):
+        self.app = app
+        self.screens = {}
+        self.current_screen = "main"
 
-def render():
-    frags = []
-    frags.append(("", ascii_art))
-    return frags
-    
-control = FormattedTextControl(render, focusable=True)
-container = HSplit([Window(content=control, always_hide_cursor=True)])
+    def add_screen(self, screen):
+        self.screens[screen.name] = screen
 
+    def switch_screen(self, name):
+        self.current_screen = name
+        screen = self.screens[name]
+        self.app.layout = screen.layout()
+        self.app.key_bindings = screen.keybindings(self)
+        self.app.invalidate()  # redraw the screen
 
-kb = KeyBindings()
+# start app
+app = Application(full_screen=True)
+app_state = AppState(app)
 
-@kb.add("q")
-def _(event):
-    event.app.exit()
+landing_screen = LandingScreen()
+app_state.add_screen(landing_screen)
 
-
-app = Application(layout=Layout(container), key_bindings=kb, full_screen=True)
-
-
-if __name__ == "__main__":
-    app.run()
+# Make sure you're passing the **instance**, not the class
+app_state.switch_screen("landing")
+app.run()
