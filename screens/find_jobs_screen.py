@@ -5,6 +5,15 @@ from screens.screen_base import Screen
 
 from models.job_description import JobDescription
 
+ascii_art = r"""
+___________.__            .___      ____.     ___.           
+╲_   _____╱│__│ ____    __│ _╱     │    │ ____╲_ │__   ______
+ │    __)  │  │╱    ╲  ╱ __ │      │    │╱  _ ╲│ __ ╲ ╱  ___╱
+ │     ╲   │  │   │  ╲╱ ╱_╱ │  ╱╲__│    (  <_> ) ╲_╲ ╲╲___ ╲ 
+ ╲___  ╱   │__│___│  ╱╲____ │  ╲________│╲____╱│___  ╱____  >
+     ╲╱            ╲╱      ╲╱                      ╲╱     ╲╱ 
+"""
+
 jobs = [
     JobDescription(
         title="Software Engineer",
@@ -52,9 +61,14 @@ class FindJobsScreen(Screen):
         self.jobs: list[JobDescription] = []
         self.jobs = jobs  # temp for now
         self.current_job_index = 0  # Track which job we're viewing
-        self.line_len = 50
     
     def render(self):
+        frags = []
+        
+        frags.append(("", ascii_art))
+        frags.append(("", "\n" + "="*self.line_len + "\n"))
+        frags.append(("", "Find Jobs\n\n"))
+
         if not self.jobs:
             return [("", "No jobs found.")]
         
@@ -68,9 +82,8 @@ class FindJobsScreen(Screen):
         nav_info = f"\nJob {self.current_job_index + 1} of {len(self.jobs)}"
         nav_help = "\nPress 'j' for next job, 'k' for previous job, 'q' to go back"
         
-        return [
-            ("", job_text + nav_info + nav_help)
-        ]
+        frags.append(("", job_text + nav_info + nav_help))
+        return frags
        
     def layout(self):
         return Layout(self.container)
