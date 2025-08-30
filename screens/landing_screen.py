@@ -36,8 +36,8 @@ class LandingScreen(Screen):
             style = "reverse" if i == self.state["selection"] else ""
             frags.append((style, f"{prefix}{option}\n"))
 
-        frags.append(("", "\n" + "="*line_len+"\n"))
-        frags.append(("", "\nPress Q to quit.\n"))
+        frags.append(("", "\n" + "="*line_len))
+        frags.append(("", "\n[j] down, [k] up, [enter] select, [q] quit.\n"))
         return frags
 
     def layout(self):
