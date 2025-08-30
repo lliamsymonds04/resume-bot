@@ -3,9 +3,11 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.widgets import TextArea, Box
 
+LINE_LEN = 70
 class Screen:
     def __init__(self, name):
         self.name = name
+        self.line_len = LINE_LEN
 
     def layout(self):
         """Return the screen's layout"""

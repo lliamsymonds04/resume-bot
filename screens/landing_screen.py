@@ -11,7 +11,7 @@ ascii_art = r"""__________                                     __________       
  |    |   \  ___/ \___ \|  |  /  Y Y  \  ___/   |    |   (  <_> )  |  
  |____|_  /\___  >____  >____/|__|_|  /\___  >  |______  /\____/|__|  
         \/     \/     \/            \/     \/          \/             """
-ascii_art += "\n" + "="*line_len + "\n"
+# ascii_art += "\n" + "="*line_len + "\n"
 
 options = ["Config", "Find Jobs", "Something else idk"]
 
@@ -22,9 +22,12 @@ class LandingScreen(Screen):
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.state = {"selection": 0}
 
+        # ascii_art += "\n" + "="*super().line_len + "\n"
+
     def render(self):
         frags = []
         frags.append(("", ascii_art))
+        frags.append(("", "\n" + "="*self.line_len + "\n"))
         frags.append(("", "Welcome to Resume Bot!\n\n"))
         frags.append(("", "Options:\n"))
 
