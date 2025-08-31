@@ -16,7 +16,7 @@ if not jobsite:
 
 browser_config = BrowserConfig(
     enable_stealth=True,
-    headless=True,
+    headless=False,
     viewport={
         "width": 800,
         "height": 600,

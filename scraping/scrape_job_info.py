@@ -3,7 +3,7 @@ from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
 
 browser_config = BrowserConfig(
     enable_stealth=True,
-    headless=False,
+    headless=True,
     viewport={
         "width": 800,
         "height": 600,

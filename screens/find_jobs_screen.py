@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import textwrap
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -18,16 +19,7 @@ ___________.__            .___      ____.     ___.
      ╲╱            ╲╱      ╲╱                      ╲╱     ╲╱ 
 """
 
-def get_job_text(job: JobListing):
-    lines = [f"Title: {job.title}"]
-    lines.append(f"Company: {job.company or 'N/A'}")
-    lines.append(f"Location: {job.location or 'N/A'} | Salary: {job.salary or 'N/A'}")
-    lines.append(f"Time Listed: {job.time_listed or 'N/A'}")
-    if job.description:
-        lines.append("\nDescription:")
-        lines.append(job.description)
 
-    return "\n".join(lines)
 
 class FindJobsScreen(Screen):
     def __init__(self):
@@ -44,6 +36,19 @@ class FindJobsScreen(Screen):
         if len(self.jobs) == 0:
             self.loading = True
             asyncio.create_task(self.load_jobs())
+
+    def get_job_text(self, job: JobListing):
+        lines = [f"Title: {job.title}"]
+        lines.append(f"Company: {job.company or 'N/A'}")
+        lines.append(f"Location: {job.location or 'N/A'} | Salary: {job.salary or 'N/A'}")
+        lines.append(f"Time Listed: {job.time_listed or 'N/A'}")
+        if job.description:
+            lines.append("\nDescription:")
+            # Wrap the description text to fit within terminal width
+            wrapped_description = textwrap.fill(job.description, width=self.line_len, break_long_words=False)
+            lines.append(wrapped_description)
+
+        return "\n".join(lines)
 
     async def load_jobs(self):
         try:
@@ -81,7 +86,7 @@ class FindJobsScreen(Screen):
             self.current_job_index = len(self.jobs) - 1
         
         current_job = self.jobs[self.current_job_index]
-        job_text = get_job_text(current_job)
+        job_text = self.get_job_text(current_job)
         
         # Add navigation info
         nav_info = f"\nJob {self.current_job_index + 1} of {len(self.jobs)}"
