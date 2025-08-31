@@ -4,7 +4,6 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
-from prompt_toolkit.application import get_app
 from scraping.get_jobs import scrape_jobs
 from ai.parse_job_listings import parse_job_listings
 
@@ -60,8 +59,7 @@ class FindJobsScreen(Screen):
             self.jobs = []  # Set empty list on error
 
         self.loading = False
-        # Use app.invalidate() instead of control.invalidate()
-        get_app().invalidate()
+        self.redraw() 
 
     def render(self):
         frags = []

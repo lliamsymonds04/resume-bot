@@ -1,6 +1,7 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.widgets import TextArea, Box
+from prompt_toolkit.application import get_app
 import sys
 from io import StringIO
 from contextlib import contextmanager
@@ -30,6 +31,9 @@ class Screen:
     def layout(self):
         """Return the screen's layout"""
         return Layout(Box(TextArea(text=f"This is {self.name}")))
+
+    def redraw(self):
+        get_app().invalidate()
 
     def keybindings(self, app_state):
         """Return screen-specific keybindings"""
