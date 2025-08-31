@@ -39,14 +39,11 @@ async def scrape(website: str, browser_config, run_config):
         result = await crawler.arun(url=website, config=run_config)
         return result.markdown
 
-       
-def get_jobs(page: int = 1):
+async def scrape_jobs(page: int):
     website = jobsite
     if page > 1:
-        # Add page to query
-        website = f"{website}?page={page}"
-
-    # return asyncio.run(scrape(website, browser_config, run_config))
-
-async def scrape_jobs():
-    return await scrape(jobsite, browser_config, run_config)
+        if "?" in website:
+            website = f"{website}&page={page}"
+        else:
+            website = f"{website}?page={page}"
+    return await scrape(website, browser_config, run_config)

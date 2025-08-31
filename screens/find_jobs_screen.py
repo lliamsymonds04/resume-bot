@@ -33,6 +33,7 @@ class FindJobsScreen(Screen):
         self.current_job_index = 0 
         self.loading = False  # Initialize loading state 
         self.db = JobDatabase()  # Initialize database service
+        self.page = 1
 
     def on_show(self):
         # First, load existing jobs from database
@@ -59,7 +60,7 @@ class FindJobsScreen(Screen):
     async def load_jobs(self):
         try:
             with self.suppress_output():
-                scrape_result = await scrape_jobs()
+                scrape_result = await scrape_jobs(self.page)
                 parsed = parse_job_listings(scrape_result)
                 
                 # Save new jobs to database
@@ -68,6 +69,7 @@ class FindJobsScreen(Screen):
                 # Load all jobs from database (including newly saved ones)
                 self.jobs = self.db.load_jobs(limit=50)
                 self.current_job_index = 0  # Reset to first job
+                self.page += 1
                 
                 logging.info(f"Scraped and saved {new_jobs_count} new jobs")
                 
