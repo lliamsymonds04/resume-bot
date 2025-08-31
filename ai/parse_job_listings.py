@@ -3,9 +3,6 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel
 from ai.llm_config import get_llm
 
-
-
-
 class JobListingsResponse(BaseModel):
     jobs: list[JobListing]
 
@@ -29,6 +26,7 @@ def parse_job_listings(job_listings: str) -> JobListingsResponse:
         parsed = parser.parse(response.content)
         return parsed
     except Exception as e:
-        print(f"Failed to parse LLM output: {e}")
-        # Optionally, you can add retry logic here
+        # Log error instead of printing to avoid TUI interference
+        import logging
+        logging.error(f"Failed to parse LLM output: {e}")
         return None

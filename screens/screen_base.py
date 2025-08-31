@@ -1,12 +1,31 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.widgets import TextArea, Box
+import sys
+from io import StringIO
+from contextlib import contextmanager
 
 LINE_LEN = 70
 class Screen:
     def __init__(self, name):
         self.name = name
         self.line_len = LINE_LEN
+
+    @contextmanager
+    def suppress_output(self):
+        """Context manager to suppress stdout/stderr during operations that might interfere with TUI"""
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        
+        try:
+            # Redirect stdout and stderr to suppress all output
+            sys.stdout = StringIO()
+            sys.stderr = StringIO()
+            yield
+        finally:
+            # Always restore stdout and stderr
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
 
     def layout(self):
         """Return the screen's layout"""

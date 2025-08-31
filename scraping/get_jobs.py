@@ -1,6 +1,12 @@
 import asyncio
+import logging
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode, DefaultMarkdownGenerator
 import os
+
+# Suppress crawl4ai logs to prevent TUI interference
+logging.getLogger('crawl4ai').setLevel(logging.ERROR)
+logging.getLogger('playwright').setLevel(logging.ERROR)
+logging.getLogger('selenium').setLevel(logging.ERROR)
 
 jobsite = os.getenv("JOBSITE")
 if not jobsite:
@@ -40,4 +46,7 @@ def get_jobs(page: int = 1):
         # Add page to query
         website = f"{website}?page={page}"
 
-    return asyncio.run(scrape(website, browser_config, run_config))
+    # return asyncio.run(scrape(website, browser_config, run_config))
+
+async def scrape_jobs():
+    return await scrape(jobsite, browser_config, run_config)

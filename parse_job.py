@@ -19,7 +19,7 @@ load_dotenv()
 
 #check if texts/jobs.text exists
 if os.path.exists("texts/jobs.txt"):
-    print("loaded from texts/jobs.txt")
+    # print("loaded from texts/jobs.txt")  # Commented to avoid TUI interference
     jobs = load_text("jobs")
 else:
     jobs = get_jobs()
@@ -27,4 +27,5 @@ else:
 
 job_listings = parse_job_listings(jobs)
 for job in job_listings.jobs:
-    print(job.model_dump())
+    # print(job.model_dump())  # Commented to avoid TUI interference
+    pass

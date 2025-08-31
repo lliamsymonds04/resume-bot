@@ -18,6 +18,8 @@ class AppState:
         self.app.layout = screen.layout()
         self.app.key_bindings = screen.keybindings(self)
         self.app.invalidate()  # redraw the screen
+        if hasattr(screen, "on_show"):
+            screen.on_show()
 
 # start app
 app = Application(full_screen=True)

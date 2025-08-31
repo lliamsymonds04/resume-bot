@@ -8,4 +8,5 @@ class JobListing(BaseModel):
     company: Optional[str]
     location: Optional[str]
     description: Optional[str]
-    days_listed: Optional[int]
+    salary: Optional[str]
+    time_listed: Optional[str]

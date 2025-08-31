@@ -28,7 +28,8 @@ job_d = parse_job_description(job_info, llm)
 
 from ai.get_skills import get_relevant_skills
 relevant_skills = get_relevant_skills(job_d, 20)
-for category, skills in relevant_skills.model_dump().items():
-    print(f"{category}:")
-    for skill in skills:
-        print(f" - {skill}")
+# Commented out print statements to avoid TUI interference
+# for category, skills in relevant_skills.model_dump().items():
+#     print(f"{category}:")
+#     for skill in skills:
+#         print(f" - {skill}")
