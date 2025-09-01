@@ -27,8 +27,8 @@ class ManualApplyScreen(Screen):
         # Create URL input field
         self.url_input = TextArea(
             text="",
-            height=3,
-            multiline=False,
+            height=2,
+            multiline=True,
             scrollbar=False,
             wrap_lines=True
         )
@@ -97,13 +97,10 @@ class ManualApplyScreen(Screen):
 
     def add_line_to_status(self, line):
         """Add a line to the status label"""
-        redraw = False
         if self.status_label.text:
             self.status_label.text += "\n"
-            redraw = True
         self.status_label.text += line
-        if redraw:
-            self.redraw()
+        self.redraw()
 
     async def process_job(self):
         """Process the job application"""
@@ -120,9 +117,6 @@ class ManualApplyScreen(Screen):
             self.add_line_to_status(f"• Scraping the url...")
             with self.suppress_output():
                 job_info = await scrape_job_info(url)
-
-            # temporarily sleep
-            await asyncio.sleep(0.1)
 
             self.add_line_to_status(f"• Processing job information...")
 
