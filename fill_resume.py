@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from ai.parse_job_description import parse_job_description
 from ai.get_skills import get_relevant_skills
@@ -104,14 +105,14 @@ def get_input_data(job_description: JobDescription):
 
     return input_data
 
-def fill_resume(job_description: JobDescription):
+async def fill_resume(job_description: JobDescription):
     prompt = create_resume_filling_prompt()
     input_data = get_input_data(job_description)
 
     llm = get_llm(0.3, "light")
     resume_chain = prompt | llm | StrOutputParser()
 
-    result = resume_chain.invoke(input_data)
+    result = await resume_chain.ainvoke(input_data)
     result = remove_code_block(result)
     return result
 
@@ -130,13 +131,17 @@ def fix_resume_formatting(resume: str) -> str:
     return remove_code_block(result)
 
 def save_resume(resume: str, job_description: JobDescription):
-    with open("output/generated_resume.md", "w", encoding="utf-8") as f:
+    base_path = f"output/{job_description.company}"
+    os.makedirs(base_path, exist_ok=True)
+    with open(f"{base_path}/generated_resume.md", "w", encoding="utf-8") as f:
         f.write(resume)
+
+    #TODO: make the resume save as users name
         
     subprocess.run([
         "pandoc",
-        "output/generated_resume.md",
-        "-o", "output/generated_resume.pdf",
+        f"{base_path}/generated_resume.md",
+        "-o", f"{base_path}/generated_resume.pdf",
         "-V", "geometry:margin=1in",
         "-V", "fontsize=10pt",
         "-V", "geometry:top=0.5in",
@@ -144,7 +149,9 @@ def save_resume(resume: str, job_description: JobDescription):
         "-V", "pagestyle=empty"
     ], check=True)
 
-    
+    # delete the markdown file
+    os.remove(f"{base_path}/generated_resume.md")
+
 if __name__ == "__main__":
     import os
     if os.path.exists("texts/job_info.txt"):

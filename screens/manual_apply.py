@@ -5,8 +5,10 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
+from ai.parse_job_description import parse_job_description
 from scraping.scrape_job_info import scrape_job_info
 from screens.screen_base import Screen
+from fill_resume import fill_resume, save_resume
 
 ascii_art = r"""
    _____                             .__       _____             .___      
@@ -121,7 +123,15 @@ class ManualApplyScreen(Screen):
 
             self.add_line_to_status(f"• Processing job information...")
 
+            job_description = parse_job_description(job_info)
+
             self.add_line_to_status(f"✓ Successfully processed job from URL")
+            self.add_line_to_status(f"\n• Generating resume...")
+
+            resume = await fill_resume(job_description)
+            save_resume(resume, job_description)
+
+            self.add_line_to_status(f"✓ Successfully generated resume")
 
             # Here you would call your job processing logic
             # For example:
