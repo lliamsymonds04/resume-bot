@@ -1,7 +1,7 @@
 import json
 import os
 import subprocess
-from ai.parse_job_description import parse_job_description
+from ai.parse_job import parse_job_description
 from ai.get_skills import get_relevant_skills
 from ai.llm_config import get_llm
 from ai.tailor_projects import tailor_projects
