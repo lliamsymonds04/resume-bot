@@ -5,6 +5,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
+from scraping.scrape_job_info import scrape_job_info
 from screens.screen_base import Screen
 
 ascii_art = r"""
@@ -92,10 +93,18 @@ class ManualApplyScreen(Screen):
         
         return True, ""
 
+    def add_line_to_status(self, line):
+        """Add a line to the status label"""
+        redraw = False
+        if self.status_label.text:
+            self.status_label.text += "\n"
+            redraw = True
+        self.status_label.text += line
+        if redraw:
+            self.redraw()
+
     async def process_job(self):
         """Process the job application"""
-        self.status_label.text = "Processing job application..."
-        self.redraw()
         
         try:
             # Validate input
@@ -106,7 +115,14 @@ class ManualApplyScreen(Screen):
                 return
             
             url = self.get_url()
-            
+            self.add_line_to_status(f"• Scraping the url...")
+            with self.suppress_output():
+                job_info = await scrape_job_info(url)
+
+            self.add_line_to_status(f"• Processing job information...")
+
+            self.add_line_to_status(f"✓ Successfully processed job from URL")
+
             # Here you would call your job processing logic
             # For example:
             # from fill_resume import fill_resume
@@ -115,8 +131,8 @@ class ManualApplyScreen(Screen):
             # Placeholder for actual processing
             await asyncio.sleep(2)  # Simulate processing time
             
-            self.status_label.text = f"✓ Successfully processed job from URL"
-            self.redraw()
+            # self.status_label.text = f"✓ Successfully processed job from URL"
+            # self.redraw()
             
             # Optionally clear input after successful processing
             # self.clear_input()

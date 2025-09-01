@@ -26,5 +26,8 @@ async def scrape(link: str, browser_config, run_config):
         result = await crawler.arun(url=link, config=run_config)
         return result.markdown
 
-def scrape_job_info(link: str):
-    return asyncio.run(scrape(link, browser_config, run_config))
+# def scrape_job_info(link: str):
+#     return asyncio.run(scrape(link, browser_config, run_config))
+
+async def scrape_job_info(link: str):
+    return await scrape(link, browser_config, run_config)
