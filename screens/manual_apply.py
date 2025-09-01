@@ -121,6 +121,9 @@ class ManualApplyScreen(Screen):
             with self.suppress_output():
                 job_info = await scrape_job_info(url)
 
+            # temporarily sleep
+            await asyncio.sleep(0.1)
+
             self.add_line_to_status(f"• Processing job information...")
 
             job_description = parse_job_description(job_info)
@@ -133,19 +136,6 @@ class ManualApplyScreen(Screen):
 
             self.add_line_to_status(f"✓ Successfully generated resume")
 
-            # Here you would call your job processing logic
-            # For example:
-            # from fill_resume import fill_resume
-            # result = await fill_resume(url)
-            
-            # Placeholder for actual processing
-            await asyncio.sleep(2)  # Simulate processing time
-            
-            # self.status_label.text = f"✓ Successfully processed job from URL"
-            # self.redraw()
-            
-            # Optionally clear input after successful processing
-            # self.clear_input()
             
         except Exception as e:
             logging.error(f"Error processing job: {e}")

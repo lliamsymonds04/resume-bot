@@ -130,18 +130,22 @@ def fix_resume_formatting(resume: str) -> str:
 
     return remove_code_block(result)
 
-def save_resume(resume: str, job_description: JobDescription):
+def save_resume(resume: str, job_description: JobDescription, keep_md = False):
     base_path = f"output/{job_description.company}"
     os.makedirs(base_path, exist_ok=True)
     with open(f"{base_path}/generated_resume.md", "w", encoding="utf-8") as f:
         f.write(resume)
 
     #TODO: make the resume save as users name
-        
+    user_name = "temp"
+    with open("data/me.json", 'r', encoding='utf-8') as f:
+        me_data = json.load(f)
+        user_name = me_data.get("name", "temp").lower()
+
     subprocess.run([
         "pandoc",
         f"{base_path}/generated_resume.md",
-        "-o", f"{base_path}/generated_resume.pdf",
+        "-o", f"{base_path}/{user_name}-resume.pdf",
         "-V", "geometry:margin=1in",
         "-V", "fontsize=10pt",
         "-V", "geometry:top=0.5in",
@@ -150,7 +154,8 @@ def save_resume(resume: str, job_description: JobDescription):
     ], check=True)
 
     # delete the markdown file
-    os.remove(f"{base_path}/generated_resume.md")
+    if not keep_md:
+        os.remove(f"{base_path}/generated_resume.md")
 
 if __name__ == "__main__":
     import os
