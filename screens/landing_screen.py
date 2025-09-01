@@ -3,8 +3,6 @@ from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
 
-line_len = 70
-
 ascii_art = r"""__________                                     __________        __   
 \______   \ ____   ________ __  _____   ____   \______   \ _____/  |_ 
  |       _// __ \ /  ___/  |  \/     \_/ __ \   |    |  _//  _ \   __\
@@ -18,7 +16,7 @@ class LandingScreen(Screen):
         self.control = FormattedTextControl(self.render, focusable=True)
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.state = {"selection": 0}
-        self.options = ["Config", "Find Jobs", "Something else idk"]
+        self.options = ["Find Jobs", "Manual Apply", "Config"]
 
     def render(self):
         frags = []
@@ -54,6 +52,8 @@ class LandingScreen(Screen):
                 app_state.switch_screen("config")
             elif selected_option == "Find Jobs":
                 app_state.switch_screen("find_jobs")
+            elif selected_option == "Manual Apply":
+                app_state.switch_screen("manual_apply")
             else:
                 pass
 
