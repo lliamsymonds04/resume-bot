@@ -108,6 +108,7 @@ snowballstemmer==2.2.0
 soupsieve==2.7
 SQLAlchemy==2.0.43
 sympy==1.14.0
+tavily-python==0.7.11
 tenacity==9.1.2
 tf-playwright-stealth==1.2.0
 threadpoolctl==3.6.0
