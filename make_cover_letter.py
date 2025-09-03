@@ -2,6 +2,7 @@ import os
 import subprocess
 import json
 import asyncio
+from datetime import datetime
 from dotenv import load_dotenv
 from models.job_description import JobDescription
 from ai.resume_util import get_input_data, remove_code_block
@@ -33,12 +34,14 @@ def make_prompt():
     Instructions:
     - Make the title the candidate's name from `my_data`
     - Include the contact information from `my_data` across multiple lines. ensure the links are setup
-    - Include today's date
+    - Use \hrulefill to separate the links from the main content
+    - Include today's date, {todays_date}
     - Produce a single, complete markdown cover letter addressed to the hiring team. Do NOT include any explanations, comments, or extra text.
     - Keep formatting clean and consistent with Markdown. Avoid code blocks.
     - The cover letter must be well-structured: opening greeting, strong introduction tailored to the job, body paragraphs highlighting skills, projects, and coursework aligned with the role, and a confident closing statement.
     - Ensure the tone is professional, concise, and engaging.
     - Emphasize quantifiable achievements, relevant experiences, and how they align with the company’s needs.
+    - Use two lines to separate paragraphs
     - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name.
     """)
 
@@ -50,6 +53,7 @@ async def make_cover_letter(input_data):
     llm = get_llm(0.3, "good")
     chain = prompt | llm | StrOutputParser()
     
+
     result = await chain.ainvoke(input_data)
     result = remove_code_block(result)
     return result
@@ -61,11 +65,11 @@ def save_resume(resume: str, job_description: JobDescription, keep_md = False):
         user_name = me_data.get("name", "temp").lower()
 
     base_path = f"output/{job_description.company}"
-    os.makedirs(base_path, exist_ok=True)
 
     # Replace spaces with hyphens
     user_name = user_name.replace(" ", "-")
     base_path = base_path.replace(" ", "-")
+    os.makedirs(base_path, exist_ok=True)
 
     md_file_path = f"{base_path}/generated-cover-letter.md"
     with open(md_file_path, "w", encoding="utf-8") as f:
@@ -85,6 +89,14 @@ def save_resume(resume: str, job_description: JobDescription, keep_md = False):
     # delete the markdown file
     if not keep_md:
         os.remove(md_file_path)
+
+def ordinal(n: int) -> str:
+    if 11 <= n % 100 <= 13:  # special case for 11th, 12th, 13th
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
 
 if __name__ == "__main__":
     load_dotenv()
@@ -107,10 +119,17 @@ if __name__ == "__main__":
         skills=["Python", "SQL", "Spark", "Airflow", "dbt", "Docker", "CI/CD"],
         salary="AUD 110,000 - 130,000"
     )
+    now = datetime.now()
+    todays_date = f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"   
+
     input_data = get_input_data(job)
+    # Add the date to input data
+    input_data["todays_date"] = todays_date
+
     cover_letter = asyncio.run(make_cover_letter(input_data))
 
     save_resume(cover_letter, job, keep_md=True)
 
     
+
 
