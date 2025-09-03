@@ -1,8 +1,10 @@
+import subprocess
 from models.job_description import JobDescription
 from ai.get_skills import get_relevant_skills
 from ai.tailor_projects import tailor_projects
 from datetime import datetime
 import json
+import os
 
 def remove_code_block(text: str) -> str:
     lines = text.strip().split('\n')
@@ -52,3 +54,39 @@ async def get_input_data(job_description: JobDescription):
     }
 
     return input_data
+
+def save_md_to_pdf(md: str, job_description: JobDescription, tail_name: str, keep_md: bool, additional_args: list):
+    user_name = "temp"
+    with open("data/me.json", 'r', encoding='utf-8') as f:
+        me_data = json.load(f)
+        user_name = me_data.get("name", "temp").lower()
+
+    base_path = f"output/{job_description.company}"
+
+    # Replace spaces with hyphens
+    user_name = user_name.replace(" ", "-")
+    base_path = base_path.replace(" ", "-")
+    os.makedirs(base_path, exist_ok=True)
+
+    md_file_path = f"{base_path}/generated-{tail_name}.md"
+    with open(md_file_path, "w", encoding="utf-8") as f:
+        f.write(md)
+
+    args = [
+        "pandoc",
+        md_file_path,
+        "-o", f"{base_path}/{user_name}-cover-letter.pdf",
+        "--pdf-engine=xelatex",
+        "-V", "geometry:margin=1in",
+        "-V", "geometry:top=0.5in",
+        "-V", "pagestyle=empty"
+    ]
+
+    args.extend(additional_args)
+
+    subprocess.run(args, check=True)
+
+    # delete the markdown file
+    if not keep_md:
+        os.remove(md_file_path)
+

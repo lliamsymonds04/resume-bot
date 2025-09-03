@@ -1,10 +1,7 @@
-import os
-import subprocess
-import json
 import asyncio
 from dotenv import load_dotenv
 from models.job_description import JobDescription
-from ai.resume_util import get_input_data, remove_code_block
+from ai.resume_util import get_input_data, remove_code_block, save_md_to_pdf
 from ai.llm_config import get_llm
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -61,37 +58,7 @@ async def make_cover_letter(input_data):
     return result
 
 def save_cover_letter(cover_letter: str, job_description: JobDescription, keep_md = False):
-    user_name = "temp"
-    with open("data/me.json", 'r', encoding='utf-8') as f:
-        me_data = json.load(f)
-        user_name = me_data.get("name", "temp").lower()
-
-    base_path = f"output/{job_description.company}"
-
-    # Replace spaces with hyphens
-    user_name = user_name.replace(" ", "-")
-    base_path = base_path.replace(" ", "-")
-    os.makedirs(base_path, exist_ok=True)
-
-    md_file_path = f"{base_path}/generated-cover-letter.md"
-    with open(md_file_path, "w", encoding="utf-8") as f:
-        f.write(cover_letter)
-
-    subprocess.run([
-        "pandoc",
-        md_file_path,
-        "-o", f"{base_path}/{user_name}-cover-letter.pdf",
-        "--pdf-engine=xelatex",
-        "-V", "geometry:margin=1in",
-        "-V", "fontsize=11pt",
-        "-V", "geometry:top=0.5in",
-        "-V", "pagestyle=empty"
-    ], check=True)
-
-    # delete the markdown file
-    if not keep_md:
-        os.remove(md_file_path)
-
+    save_md_to_pdf(cover_letter, job_description, "cover_letter", keep_md, ["-V", "fontSize=11pt"])
 
 if __name__ == "__main__":
     load_dotenv()
@@ -119,8 +86,4 @@ if __name__ == "__main__":
 
     cover_letter = asyncio.run(make_cover_letter(input_data))
 
-    # save_resume(cover_letter, job, keep_md=True)
-
-    
-
-
+    save_resume(cover_letter, job, keep_md=True)
