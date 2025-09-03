@@ -58,6 +58,8 @@ async def expand_project_for_job(job_description: JobDescription, project: Proje
     Expand on the project to make it more relevant to the job description.
     Do not change the title
     Do not lie about my skills or process
+    Do not talk about programming languages or tools that i did not use.
+    Always mention the programming languages and the tools
     Keep the description concise and focused on the key aspects. It is for a resume
     Do not talk about external teams or stakeholders if none are mentioned
 

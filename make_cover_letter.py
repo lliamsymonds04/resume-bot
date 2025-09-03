@@ -2,7 +2,6 @@ import os
 import subprocess
 import json
 import asyncio
-from datetime import datetime
 from dotenv import load_dotenv
 from models.job_description import JobDescription
 from ai.resume_util import get_input_data, remove_code_block
@@ -86,7 +85,6 @@ def save_cover_letter(cover_letter: str, job_description: JobDescription, keep_m
         "-V", "geometry:margin=1in",
         "-V", "fontsize=11pt",
         "-V", "geometry:top=0.5in",
-        # "-V", "mainfont=Garamond",
         "-V", "pagestyle=empty"
     ], check=True)
 
@@ -121,7 +119,7 @@ if __name__ == "__main__":
 
     cover_letter = asyncio.run(make_cover_letter(input_data))
 
-    save_resume(cover_letter, job, keep_md=True)
+    # save_resume(cover_letter, job, keep_md=True)
 
     
 
