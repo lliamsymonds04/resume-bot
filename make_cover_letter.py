@@ -33,8 +33,8 @@ def make_prompt():
 
     Instructions:
     - Make the title the candidate's name from `my_data`
-    - Include the contact information from `my_data`. Format websites in Markdown so that they are clickable links: [display text](URL). 
-        Example: GitHub: [github.com/username](https://github.com/username)
+    - Include the contact information from `my_data`. Format websites in Markdown so that they are clickable links: [url](URL). 
+        Example: LinkedIn: [linkedin.com/in/username](https://linkedin.com/in/username)
     - Include phone number with ph: in front
     - Make sure each bit of contact information is on a new line using two spaces 
     - Use \hrulefill to separate the links from the main content
@@ -57,6 +57,8 @@ async def make_cover_letter(input_data):
     llm = get_llm(0.3, "good")
     chain = prompt | llm | StrOutputParser()
     
+    date = get_date()
+    input_data["todays_date"] = date
 
     result = await chain.ainvoke(input_data)
     result = remove_code_block(result)
@@ -83,10 +85,11 @@ def save_resume(resume: str, job_description: JobDescription, keep_md = False):
         "pandoc",
         md_file_path,
         "-o", f"{base_path}/{user_name}-cover-letter.pdf",
+        "--pdf-engine=xelatex",
         "-V", "geometry:margin=1in",
-        "-V", "fontsize=10pt",
+        "-V", "fontsize=11pt",
         "-V", "geometry:top=0.5in",
-        "-V", "mainfont=Garamond",
+        # "-V", "mainfont=Garamond",
         "-V", "pagestyle=empty"
     ], check=True)
 
@@ -100,6 +103,10 @@ def ordinal(n: int) -> str:
     else:
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"
+
+def get_date():
+    now = datetime.now()
+    return f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"
 
 
 if __name__ == "__main__":
@@ -123,13 +130,8 @@ if __name__ == "__main__":
         skills=["Python", "SQL", "Spark", "Airflow", "dbt", "Docker", "CI/CD"],
         salary="AUD 110,000 - 130,000"
     )
-    now = datetime.now()
-    todays_date = f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"   
 
     input_data = get_input_data(job)
-
-    # Add the date to input data
-    input_data["todays_date"] = todays_date
 
     cover_letter = asyncio.run(make_cover_letter(input_data))
 
