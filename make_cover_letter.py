@@ -31,8 +31,10 @@ def make_prompt():
     {coursework}
 
     Instructions:
+    - Make the title the candidate's name from `my_data`
+    - Include the contact information from `my_data` across multiple lines. ensure the links are setup
+    - Include today's date
     - Produce a single, complete markdown cover letter addressed to the hiring team. Do NOT include any explanations, comments, or extra text.
-    - Title the cover letter with the candidate's name from `my_data` and include contact info on one line.
     - Keep formatting clean and consistent with Markdown. Avoid code blocks.
     - The cover letter must be well-structured: opening greeting, strong introduction tailored to the job, body paragraphs highlighting skills, projects, and coursework aligned with the role, and a confident closing statement.
     - Ensure the tone is professional, concise, and engaging.
@@ -53,16 +55,21 @@ async def make_cover_letter(input_data):
     return result
 
 def save_resume(resume: str, job_description: JobDescription, keep_md = False):
-    base_path = f"output/{job_description.company}"
-    os.makedirs(base_path, exist_ok=True)
-    md_file_path = f"{base_path}/generated-cover-letter.md"
-    with open(md_file_path, "w", encoding="utf-8") as f:
-        f.write(resume)
-
     user_name = "temp"
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
         user_name = me_data.get("name", "temp").lower()
+
+    base_path = f"output/{job_description.company}"
+    os.makedirs(base_path, exist_ok=True)
+
+    # Replace spaces with hyphens
+    user_name = user_name.replace(" ", "-")
+    base_path = base_path.replace(" ", "-")
+
+    md_file_path = f"{base_path}/generated-cover-letter.md"
+    with open(md_file_path, "w", encoding="utf-8") as f:
+        f.write(resume)
 
     subprocess.run([
         "pandoc",
