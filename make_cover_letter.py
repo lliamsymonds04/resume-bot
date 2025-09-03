@@ -45,8 +45,8 @@ def make_prompt():
     - Ensure the tone is professional, concise, and engaging.
     - Emphasize quantifiable achievements, relevant experiences, and how they align with the company’s needs.
     - Use two lines to separate paragraphs.
-    - Use the <br> tag to separate lines
-    - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name.
+    - Use the two spaces at the end of a line to separate lines
+    - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name. Make sure the sign-off and the name are on different lines using two spaces
     """)
 
     return prompt
