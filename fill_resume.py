@@ -62,9 +62,8 @@ def create_resume_filling_prompt():
 
     return prompt
 
-async def fill_resume(job_description: JobDescription):
+async def fill_resume(input_data: dict):
     prompt = create_resume_filling_prompt()
-    input_data = get_input_data(job_description)
 
     llm = get_llm(0.3, "light")
     resume_chain = prompt | llm | StrOutputParser()

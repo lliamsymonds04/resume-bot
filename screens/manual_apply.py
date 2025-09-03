@@ -8,6 +8,8 @@ from ai.parse_job import parse_job_description
 from scraping.scrape_job_info import scrape_job_info
 from screens.screen_base import Screen
 from fill_resume import fill_resume, save_resume
+from make_cover_letter import make_cover_letter, save_cover_letter
+from ai.resume_util import get_input_data
 
 ascii_art = r"""
    _____                             .__       _____             .___      
@@ -117,19 +119,24 @@ class ManualApplyScreen(Screen):
             with self.suppress_output():
                 job_info = await scrape_job_info(url)
 
-            self.add_line_to_status(f"• Processing job information...")
-
             job_description = parse_job_description(job_info)
 
             self.add_line_to_status(f"✓ Successfully processed job from URL")
-            self.add_line_to_status(f"\n• Generating resume...")
+            self.add_line_to_status(f"\n• Tailoring skills...")
 
-            resume = await fill_resume(job_description)
+            input_data = await get_input_data(job_description)
+
+            self.add_line_to_status(f"• Generating resume...")
+            resume = await fill_resume(input_data)
             save_resume(resume, job_description)
-
             self.add_line_to_status(f"✓ Successfully generated resume")
+            self.add_line_to_status(f"\n• Generating cover letter...")
 
-            
+            cover_letter = await make_cover_letter(input_data)
+            save_cover_letter(cover_letter, job_description)
+            self.add_line_to_status(f"✓ Successfully generated cover letter")
+            self.add_line_to_status(f"\n✓ All done! Check the output folder for your files.")
+
         except Exception as e:
             logging.error(f"Error processing job: {e}")
             self.status_label.text = f"Error: Failed to process job application"

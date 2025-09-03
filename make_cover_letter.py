@@ -61,7 +61,7 @@ async def make_cover_letter(input_data):
     result = remove_code_block(result)
     return result
 
-def save_resume(resume: str, job_description: JobDescription, keep_md = False):
+def save_cover_letter(cover_letter: str, job_description: JobDescription, keep_md = False):
     user_name = "temp"
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
@@ -76,7 +76,7 @@ def save_resume(resume: str, job_description: JobDescription, keep_md = False):
 
     md_file_path = f"{base_path}/generated-cover-letter.md"
     with open(md_file_path, "w", encoding="utf-8") as f:
-        f.write(resume)
+        f.write(cover_letter)
 
     subprocess.run([
         "pandoc",
