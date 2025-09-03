@@ -57,9 +57,6 @@ async def make_cover_letter(input_data):
     llm = get_llm(0.3, "good")
     chain = prompt | llm | StrOutputParser()
     
-    date = get_date()
-    input_data["todays_date"] = date
-
     result = await chain.ainvoke(input_data)
     result = remove_code_block(result)
     return result
@@ -96,17 +93,6 @@ def save_resume(resume: str, job_description: JobDescription, keep_md = False):
     # delete the markdown file
     if not keep_md:
         os.remove(md_file_path)
-
-def ordinal(n: int) -> str:
-    if 11 <= n % 100 <= 13:  # special case for 11th, 12th, 13th
-        suffix = "th"
-    else:
-        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-    return f"{n}{suffix}"
-
-def get_date():
-    now = datetime.now()
-    return f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"
 
 
 if __name__ == "__main__":

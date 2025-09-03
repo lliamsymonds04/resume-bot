@@ -1,6 +1,7 @@
 from models.job_description import JobDescription
 from ai.get_skills import get_relevant_skills
 from ai.tailor_projects import tailor_projects
+from datetime import datetime
 import json
 
 def remove_code_block(text: str) -> str:
@@ -14,6 +15,17 @@ def remove_code_block(text: str) -> str:
         clean_content = text
 
     return clean_content
+
+def ordinal(n: int) -> str:
+    if 11 <= n % 100 <= 13:  # special case for 11th, 12th, 13th
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+def get_date():
+    now = datetime.now()
+    return f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"
 
 def get_input_data(job_description: JobDescription):
     # get the relevant skills
@@ -35,7 +47,8 @@ def get_input_data(job_description: JobDescription):
         "my_data": me_data,
         "relevant_skills": relevant_skills,
         "tailored_projects": tailored_projects,
-        "coursework": coursework
+        "coursework": coursework,
+        "todays_date": get_date()
     }
 
     return input_data
