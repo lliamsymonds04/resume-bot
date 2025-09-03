@@ -33,7 +33,10 @@ def make_prompt():
 
     Instructions:
     - Make the title the candidate's name from `my_data`
-    - Include the contact information from `my_data` across multiple lines. ensure the links are setup
+    - Include the contact information from `my_data`. Format websites in Markdown so that they are clickable links: [display text](URL). 
+        Example: GitHub: [github.com/username](https://github.com/username)
+    - Include phone number with ph: in front
+    - Make sure each bit of contact information is on a new line using two spaces 
     - Use \hrulefill to separate the links from the main content
     - Include today's date, {todays_date}
     - Produce a single, complete markdown cover letter addressed to the hiring team. Do NOT include any explanations, comments, or extra text.
@@ -41,7 +44,8 @@ def make_prompt():
     - The cover letter must be well-structured: opening greeting, strong introduction tailored to the job, body paragraphs highlighting skills, projects, and coursework aligned with the role, and a confident closing statement.
     - Ensure the tone is professional, concise, and engaging.
     - Emphasize quantifiable achievements, relevant experiences, and how they align with the company’s needs.
-    - Use two lines to separate paragraphs
+    - Use two lines to separate paragraphs.
+    - Use the <br> tag to separate lines
     - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name.
     """)
 
@@ -123,6 +127,7 @@ if __name__ == "__main__":
     todays_date = f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"   
 
     input_data = get_input_data(job)
+
     # Add the date to input data
     input_data["todays_date"] = todays_date
 
