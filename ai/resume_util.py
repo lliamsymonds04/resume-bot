@@ -27,12 +27,12 @@ def get_date():
     now = datetime.now()
     return f"{now.strftime('%B')} {ordinal(now.day)}, {now.year}"
 
-def get_input_data(job_description: JobDescription):
+async def get_input_data(job_description: JobDescription):
     # get the relevant skills
-    relevant_skills = get_relevant_skills(job_description)
+    relevant_skills = await get_relevant_skills(job_description)
 
     # tailor the projects
-    tailored_projects = tailor_projects(job_description, 3)
+    tailored_projects = await tailor_projects(job_description, 3)
 
     # load the me json
     with open("data/me.json", 'r', encoding='utf-8') as f:

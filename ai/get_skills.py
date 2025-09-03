@@ -14,7 +14,7 @@ class CategorizedSkillsResponse(BaseModel):
     education_certifications: List[str]
 
 
-def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
+async def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
     now = datetime.datetime.now()
 
     if use_cache:
@@ -69,7 +69,7 @@ def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
     
     {parser.get_format_instructions()}
     """
-    response = llm.invoke(prompt)
+    response = await llm.ainvoke(prompt)
     parsed = parser.parse(response.content)
 
     # skills = parsed.skills
@@ -82,8 +82,8 @@ def get_skills(use_cache: bool = True) -> CategorizedSkillsResponse:
     # return skills_dict
     return parsed
 
-def get_relevant_skills(job_description: JobDescription, num_skills: int = 20):
-    skills = get_skills()
+async def get_relevant_skills(job_description: JobDescription, num_skills: int = 20):
+    skills = await get_skills()
 
     llm = get_llm()
     
@@ -102,8 +102,8 @@ def get_relevant_skills(job_description: JobDescription, num_skills: int = 20):
     Format the skills as:
     {parser.get_format_instructions()}
     """
-    
-    response = llm.invoke(prompt)
+
+    response = await llm.ainvoke(prompt)
     parsed = parser.parse(response.content)
     
     return parsed

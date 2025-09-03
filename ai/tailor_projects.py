@@ -7,7 +7,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import PydanticOutputParser
 
-def tailor_projects(job_description: JobDescription, num_projects: int = 3):
+async def tailor_projects(job_description: JobDescription, num_projects: int = 3):
     #load the projects json
     with open("data/projects.json", "r") as f:
         projects_raw = json.load(f)
@@ -38,13 +38,13 @@ def tailor_projects(job_description: JobDescription, num_projects: int = 3):
     tailored_projects = []
     for doc in retrieved_docs:
         # Expand the project to be more relevant to the job description
-        p = expand_project_for_job(job_description, Project(**doc.metadata))
+        p = await expand_project_for_job(job_description, Project(**doc.metadata))
         tailored_projects.append(p)
 
     return tailored_projects
 
 
-def expand_project_for_job(job_description: JobDescription, project: Project):
+async def expand_project_for_job(job_description: JobDescription, project: Project):
     llm = get_llm(0.3)
 
     parser = PydanticOutputParser(pydantic_object=Project)
@@ -65,6 +65,6 @@ def expand_project_for_job(job_description: JobDescription, project: Project):
     {parser.get_format_instructions()}
     """
 
-    response = llm.invoke(prompt)
+    response = await llm.ainvoke(prompt)
 
     return parser.parse(response.content)
