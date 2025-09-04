@@ -86,4 +86,4 @@ if __name__ == "__main__":
 
     cover_letter = asyncio.run(make_cover_letter(input_data))
 
-    save_resume(cover_letter, job, keep_md=True)
+    save_cover_letter(cover_letter, job, keep_md=True)
