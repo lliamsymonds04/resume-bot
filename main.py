@@ -1,5 +1,6 @@
 from prompt_toolkit.application import Application
 from screens.find_jobs_screen import FindJobsScreen
+from screens.job_description_screen import JobDescriptionScreen
 from screens.landing_screen import LandingScreen
 from screens.config_screen import ConfigScreen
 from screens.manual_apply import ManualApplyScreen
@@ -17,14 +18,21 @@ class AppState:
         self.screens[screen.name] = screen
         screen.db = self.db  # Provide db instance to screen
 
-    def switch_screen(self, name):
+    def switch_screen(self, name, *args, **kwargs):
+        """Switch to another screen.
+
+        Accepts optional positional and keyword payloads which will be
+        forwarded to the target screen's `on_show` method. This keeps
+        existing callers that pass a single positional payload working
+        (e.g. `switch_screen("job_description", job)`).
+        """
         self.current_screen = name
         screen = self.screens[name]
         self.app.layout = screen.layout()
         self.app.key_bindings = screen.keybindings(self)
         self.app.invalidate()  # redraw the screen
         if hasattr(screen, "on_show"):
-            screen.on_show()
+            screen.on_show(*args, **kwargs)
 
 # initialize database
 db = JobDatabase()
@@ -40,14 +48,13 @@ config_screen = ConfigScreen()
 find_jobs_screen = FindJobsScreen()
 manual_apply_screen = ManualApplyScreen()
 relint_screen = RelintScreen() 
+job_description_screen = JobDescriptionScreen()
 
 # add screens
-app_state.add_screen(landing_screen)
-app_state.add_screen(config_screen)
-app_state.add_screen(find_jobs_screen)
-app_state.add_screen(manual_apply_screen)
-app_state.add_screen(relint_screen)
-
+screens = [landing_screen, config_screen, find_jobs_screen, manual_apply_screen, relint_screen, job_description_screen] 
+for screen in screens:
+    app_state.add_screen(screen)
+    
 # init
 app_state.switch_screen("landing")
 app.run()

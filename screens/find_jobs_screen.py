@@ -7,7 +7,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
 from scraping.get_jobs import scrape_jobs
 from ai.parse_job import parse_job_listings
-from services.job_database import JobDatabase
+# from services.job_database import JobDatabase
 
 from models.job_listing import JobListing
 
@@ -28,11 +28,9 @@ class FindJobsScreen(Screen):
         self.control = FormattedTextControl(self.render, focusable=True)
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.jobs: list[JobListing] = []
-        # self.jobs = jobs  # temp for now
-        self.jobs = []
         self.current_job_index = 0 
         self.loading = False  # Initialize loading state 
-        self.db = JobDatabase()  # Initialize database service
+        # self.db = JobDatabase()  # Initialize database service
         self.page = 1
 
     def on_show(self):
@@ -145,5 +143,13 @@ class FindJobsScreen(Screen):
             self.loading = True
             asyncio.create_task(self.load_jobs())
             event.app.invalidate()
+
+        @kb.add("enter")
+        def _(event):
+            if len(self.jobs) > 0:
+                job = self.jobs[self.current_job_index]
+
+                # change to different screen to process job
+                app_state.switch_screen("job_description", job=job) 
 
         return kb
