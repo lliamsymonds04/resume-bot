@@ -116,26 +116,32 @@ class ManualApplyScreen(Screen):
             
             url = self.get_url()
             self.add_line_to_status(f"• Scraping the url...")
+            
             with self.suppress_output():
                 job_info = await scrape_job_info(url)
 
+            self.add_line_to_status(f"• Processing job information...")
             job_description = parse_job_description(job_info)
 
             self.add_line_to_status(f"✓ Successfully processed job from URL")
-            self.add_line_to_status(f"\n• Tailoring skills...")
+            self.add_line_to_status(f"• Tailoring skills...")
 
             input_data = await get_input_data(job_description)
 
+            self.add_line_to_status(f"✓ Skills tailored successfully")
             self.add_line_to_status(f"• Generating resume...")
+            
             resume = await fill_resume(input_data)
             save_resume(resume, job_description.company, keep_md=True)
+            
             self.add_line_to_status(f"✓ Successfully generated resume")
-            self.add_line_to_status(f"\n• Generating cover letter...")
+            self.add_line_to_status(f"• Generating cover letter...")
 
             cover_letter = await make_cover_letter(input_data)
             save_cover_letter(cover_letter, job_description.company, keep_md=True)
+            
             self.add_line_to_status(f"✓ Successfully generated cover letter")
-            self.add_line_to_status(f"\n✓ All done! Check the output folder for your files.")
+            self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
 
         except Exception as e:
             logging.error(f"Error processing job: {e}")
