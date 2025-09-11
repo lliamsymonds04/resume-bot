@@ -47,12 +47,12 @@ class RelintScreen(Screen):
         
         # Input form
         form_content = HSplit([
-            Label(text="Job URL (enter the full URL of the job posting):"),
+            Label(text=""),  # Spacer
             self.url_input,
             Label(text=""),  # Spacer
             self.status_label,
             Label(text=""),  # Spacer
-            Label(text="Press Enter to process job | Press Ctrl+C to clear | Press 'q' to go back"),
+            Label(text="Press Enter to relint cv | Press Ctrl+C to clear | Press 'q' to go back"),
         ])
         
         # Combine header and form
@@ -67,3 +67,30 @@ class RelintScreen(Screen):
         frags.append(("", "\n" + "="*self.line_len + "\n"))
         frags.append(("", "Enter name of job:\n"))
         return frags
+
+    def layout(self):
+        return Layout(self.container)
+
+    def clear_input(self):
+        self.url_input.text = ""
+        self.status_label.text = ""
+
+    def keybindings(self, app_state=None):
+        kb = KeyBindings()
+
+        @kb.add("q")
+        def _(event):
+            app_state.switch_screen("landing")
+
+        @kb.add("enter")
+        def _(event):
+            # asyncio.create_task(self.process_job())
+            pass
+
+        @kb.add("c-c")  # Ctrl+C
+        def _(event):
+            # Clear input
+            self.clear_input()
+            self.redraw()
+
+        return kb
