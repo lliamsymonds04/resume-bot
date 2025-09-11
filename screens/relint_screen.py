@@ -7,6 +7,7 @@ from prompt_toolkit.widgets import TextArea, Label
 from screens.screen_base import Screen
 from fill_resume import save_resume
 from make_cover_letter import save_cover_letter
+from ai.resume_util import get_output_path, save_pdf, get_md_path
 
 ascii_art = r"""
 __________       .__  .__        __   
@@ -22,10 +23,9 @@ class RelintScreen(Screen):
         super().__init__("relint")
         self.line_len = 75
         
-        # Create URL input field
-        self.url_input = TextArea(
+        self.job_input = TextArea(
             text="",
-            height=2,
+            height=1,
             multiline=True,
             scrollbar=False,
             wrap_lines=True
@@ -47,8 +47,9 @@ class RelintScreen(Screen):
         
         # Input form
         form_content = HSplit([
+            Label(text="Use to update pdfs from markdown if self-edits were made.\n"),
             Label(text=""),  # Spacer
-            self.url_input,
+            self.job_input,
             Label(text=""),  # Spacer
             self.status_label,
             Label(text=""),  # Spacer
@@ -58,6 +59,7 @@ class RelintScreen(Screen):
         # Combine header and form
         self.container = HSplit([
             header,
+            Window(height=1),  # Separator
             form_content
         ])
 
@@ -70,6 +72,20 @@ class RelintScreen(Screen):
 
     def layout(self):
         return Layout(self.container)
+
+    def relint_resume(self, job_name):
+        self.status_label.text = "Relinting resume..."
+        self.redraw()
+
+        output_path = get_output_path(job_name) 
+        try:
+            md_file_path = get_md_path(output_path["base_path"], job_name)
+            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], "resume", [])
+            self.status_label.text = "Resume relinted successfully!"
+        except Exception as e:
+            logging.error(f"Error relinting resume: {e}")
+            self.status_label.text = f"Error relinting resume: {e}"
+        self.redraw()
 
     def clear_input(self):
         self.url_input.text = ""
@@ -84,7 +100,7 @@ class RelintScreen(Screen):
 
         @kb.add("enter")
         def _(event):
-            # asyncio.create_task(self.process_job())
+            asyncio.create_task(self.relint_resume())
             pass
 
         @kb.add("c-c")  # Ctrl+C
@@ -94,3 +110,7 @@ class RelintScreen(Screen):
             self.redraw()
 
         return kb
+
+    def on_show(self):
+        from prompt_toolkit.application import get_app
+        get_app().layout.focus(self.job_input)
