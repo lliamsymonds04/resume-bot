@@ -171,4 +171,5 @@ class ManualApplyScreen(Screen):
     def on_show(self):
         """Called when the screen is shown - focus the URL input"""
         from prompt_toolkit.application import get_app
+        self.clear_input()
         get_app().layout.focus(self.url_input)
