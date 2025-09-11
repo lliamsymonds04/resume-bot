@@ -16,7 +16,7 @@ class LandingScreen(Screen):
         self.control = FormattedTextControl(self.render, focusable=True)
         self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.state = {"selection": 0}
-        self.options = ["Find Jobs", "Manual Apply", "Config"]
+        self.options = ["Find Jobs", "Manual Apply", "Config", "Relint"]
 
     def render(self):
         frags = []
@@ -54,6 +54,8 @@ class LandingScreen(Screen):
                 app_state.switch_screen("find_jobs")
             elif selected_option == "Manual Apply":
                 app_state.switch_screen("manual_apply")
+            elif selected_option == "Relint":
+                app_state.switch_screen("relint")
             else:
                 pass
 

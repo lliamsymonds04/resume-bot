@@ -3,6 +3,7 @@ from screens.find_jobs_screen import FindJobsScreen
 from screens.landing_screen import LandingScreen
 from screens.config_screen import ConfigScreen
 from screens.manual_apply import ManualApplyScreen
+from screens.relint_screen import RelintScreen
 
 class AppState:
     def __init__(self, app):
@@ -31,12 +32,14 @@ landing_screen = LandingScreen()
 config_screen = ConfigScreen()
 find_jobs_screen = FindJobsScreen()
 manual_apply_screen = ManualApplyScreen()
+relint_screen = RelintScreen() 
 
 # add screens
 app_state.add_screen(landing_screen)
 app_state.add_screen(config_screen)
 app_state.add_screen(find_jobs_screen)
 app_state.add_screen(manual_apply_screen)
+app_state.add_screen(relint_screen)
 
 # init
 app_state.switch_screen("landing")

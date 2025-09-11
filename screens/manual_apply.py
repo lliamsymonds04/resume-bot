@@ -129,12 +129,12 @@ class ManualApplyScreen(Screen):
 
             self.add_line_to_status(f"• Generating resume...")
             resume = await fill_resume(input_data)
-            save_resume(resume, job_description)
+            save_resume(resume, job_description, keep_md=True)
             self.add_line_to_status(f"✓ Successfully generated resume")
             self.add_line_to_status(f"\n• Generating cover letter...")
 
             cover_letter = await make_cover_letter(input_data)
-            save_cover_letter(cover_letter, job_description)
+            save_cover_letter(cover_letter, job_description, keep_md=True)
             self.add_line_to_status(f"✓ Successfully generated cover letter")
             self.add_line_to_status(f"\n✓ All done! Check the output folder for your files.")
 
