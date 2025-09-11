@@ -7,7 +7,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import Label
 from screens.screen_base import Screen
 from models.job_listing import JobListing
-from scraping.scrape_job_info import scrape_job_info
+from job_scraping import scrape_job_description
 from ai.parse_job import parse_job_description
 
 ascii_art = r"""
@@ -22,7 +22,7 @@ ascii_art = r"""
 class JobDescriptionScreen(Screen):
     def __init__(self):
         super().__init__("job_description")
-        self.line_len = 75
+        self.loaded = False
         
         # Status display
         self.status_label = Label(text="")
@@ -33,30 +33,36 @@ class JobDescriptionScreen(Screen):
     def create_layout(self):
         # Header
         header = Window(
-            content=FormattedTextControl(self.render_header),
-            height=10,
+            content=FormattedTextControl(ascii_art),
+            height=8,
             always_hide_cursor=True
         )
         
         # Input form
         form_content = HSplit([
+            Window(height=1, char="=", style="class:line"),
             self.status_label,
-            Label(text=""),  # Spacer
-            Label(text="Press Enter to relint folder | Press Ctrl+C to clear | Press 'q' to go back"),
+            Label(text=""),
+            Window(height=1, char="-", style="class:line"),
+            Label(text=self.get_controls_text()),
         ])
         
         # Combine header and form
         self.container = HSplit([
             header,
-            Window(height=1),  # Separator
             form_content
         ])
 
     def render_header(self):
         frags = []
         frags.append(("", ascii_art))
-        frags.append(("", "\n" + "="*self.line_len + "\n"))
         return frags
+
+    def get_controls_text(self):
+        if self.loaded:
+            return "Press [enter] to apply | [q] to go back."
+        else:
+            return "Press [q] to go back."
 
     def layout(self):
         return Layout(self.container)
@@ -91,7 +97,8 @@ class JobDescriptionScreen(Screen):
 
         # Scrape job link to get full description
         try:
-            raw_job_description = await scrape_job_info(job.link)
+            with self.suppress_output():
+                raw_job_description = await scrape_job_description(job.link)
         except Exception as e:
             logging.error(f"Error scraping job info for {job.link}", exc_info=True)
             self.add_line_to_status("Error retrieving job description.")
@@ -104,14 +111,36 @@ class JobDescriptionScreen(Screen):
         self.add_line_to_status("• Parsing job description...")
         job_description = parse_job_description(raw_job_description)
         self.add_line_to_status("✓ Job description loaded successfully!\n")
+        self.redraw()
         
-        sleep(0.5)  # small pause for effect
+        self.loaded = True
         self.status_label.text = ""  # clear status
         self.add_line_to_status(f"Job Title: {job.title}")
         self.add_line_to_status(f"Company: {job.company}")
         self.add_line_to_status(f"Location: {job.location}")
-        self.add_line_to_status(f"Description: {job_description}")
+        if job_description.salary:
+            self.add_line_to_status(f"Salary: {job_description.salary}")
+
+        if len(job_description.responsibilities) > 0:
+            self.add_line_to_status("Responsibilities:")
+            responsibilities = " | ".join(job_description.responsibilities)
+            self.add_line_to_status(f" - {responsibilities}")
+
+        if len(job_description.requirements) > 0:
+            self.add_line_to_status("Requirements:")
+            requirements = " | ".join(job_description.requirements)
+            self.add_line_to_status(f" - {requirements}")
+            
+        if len(job_description.skills) > 0 and len(job_description.responsibilities) == 0:
+            self.add_line_to_status("Skills:")
+            skills = " | ".join(job_description.skills)
+            self.add_line_to_status(f" - {skills}")
+
+        # set the job description self reference
+        self.job_description = job_description
 
 
     def on_show(self, job: JobListing):
+        self.loaded = False
+        self.status_label.text = ""
         asyncio.create_task(self.load_job(job)) 
