@@ -73,22 +73,47 @@ class RelintScreen(Screen):
     def layout(self):
         return Layout(self.container)
 
-    def relint_resume(self, job_name):
-        self.status_label.text = "Relinting resume..."
+    def add_line_to_status(self, line):
+        """Add a line to the status label"""
+        if self.status_label.text:
+            self.status_label.text += "\n"
+        self.status_label.text += line
         self.redraw()
 
+    def relint(self, job_name):
         job_name = job_name.strip().lower().replace(" ", "-")
 
         output_path = get_output_path(job_name) 
+
+        # First try to relint the resume
+        relint_success = False
         try:
+            self.add_line_to_status("• Relinting resume...")
             tail_name = "resume"
             md_file_path = get_md_path(output_path["base_path"], tail_name)
             save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, [])
-            self.status_label.text = "Resume relinted successfully!"
+            self.add_line_to_status("✓ Resume relinted successfully!\n")
+            relint_success = True
         except Exception as e:
             logging.error(f"Error relinting resume: {e}")
-            self.status_label.text = f"Error relinting resume: {e}"
-        self.redraw()
+            self.add_line_to_status(f"Error relinting resume: {e}\n")
+            self.redraw()
+
+        if not relint_success:
+            return
+
+        # Then try to relint the cover letter
+        try:
+            self.add_line_to_status("• Relinting cover letter...")
+            tail_name = "cover-letter"
+            md_file_path = get_md_path(output_path["base_path"], tail_name)
+            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, [])
+            self.add_line_to_status("✓ Cover letter relinted successfully!\n")
+        except Exception as e:
+            logging.error(f"Error relinting cover letter: {e}")
+            self.add_line_to_status(f"Error relinting cover letter: {e}\n")
+
+        self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
 
     def clear_input(self):
         self.url_input.text = ""
@@ -110,8 +135,7 @@ class RelintScreen(Screen):
                 self.redraw()
                 return
 
-            # asyncio.create_task(self.relint_resume(job_name))
-            self.relint_resume(job_name)
+            self.relint(job_name)
             pass
 
         @kb.add("c-c")  # Ctrl+C
