@@ -77,10 +77,13 @@ class RelintScreen(Screen):
         self.status_label.text = "Relinting resume..."
         self.redraw()
 
+        job_name = job_name.strip().lower().replace(" ", "-")
+
         output_path = get_output_path(job_name) 
         try:
-            md_file_path = get_md_path(output_path["base_path"], job_name)
-            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], "resume", [])
+            tail_name = "resume"
+            md_file_path = get_md_path(output_path["base_path"], tail_name)
+            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, [])
             self.status_label.text = "Resume relinted successfully!"
         except Exception as e:
             logging.error(f"Error relinting resume: {e}")
@@ -100,7 +103,15 @@ class RelintScreen(Screen):
 
         @kb.add("enter")
         def _(event):
-            asyncio.create_task(self.relint_resume())
+            # get the job name from the input
+            job_name = self.job_input.text.strip()
+            if not job_name:
+                self.status_label.text = "Please enter a job name"
+                self.redraw()
+                return
+
+            # asyncio.create_task(self.relint_resume(job_name))
+            self.relint_resume(job_name)
             pass
 
         @kb.add("c-c")  # Ctrl+C

@@ -61,10 +61,12 @@ def get_output_path(company_name: str):
         me_data = json.load(f)
         user_name = me_data.get("name", "temp").lower()
 
-    user_name = user_name.replace(" ", "-")
-    base_path = base_path.replace(" ", "-")
+    user_name = user_name.lower().replace(" ", "-")
+    company_name = company_name.lower()
 
     base_path = f"output/{company_name}"
+    base_path = base_path.replace(" ", "-")
+
     os.makedirs(base_path, exist_ok=True)
 
     return {
