@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -129,12 +128,12 @@ class ManualApplyScreen(Screen):
 
             self.add_line_to_status(f"• Generating resume...")
             resume = await fill_resume(input_data)
-            save_resume(resume, job_description, keep_md=True)
+            save_resume(resume, job_description.company, keep_md=True)
             self.add_line_to_status(f"✓ Successfully generated resume")
             self.add_line_to_status(f"\n• Generating cover letter...")
 
             cover_letter = await make_cover_letter(input_data)
-            save_cover_letter(cover_letter, job_description, keep_md=True)
+            save_cover_letter(cover_letter, job_description.company, keep_md=True)
             self.add_line_to_status(f"✓ Successfully generated cover letter")
             self.add_line_to_status(f"\n✓ All done! Check the output folder for your files.")
 

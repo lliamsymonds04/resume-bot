@@ -55,13 +55,13 @@ async def get_input_data(job_description: JobDescription):
 
     return input_data
 
-def save_md_to_pdf(md: str, job_description: JobDescription, tail_name: str, keep_md: bool, additional_args: list):
+def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, additional_args: list):
     user_name = "temp"
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
         user_name = me_data.get("name", "temp").lower()
 
-    base_path = f"output/{job_description.company}"
+    base_path = f"output/{company_name}"
 
     # Replace spaces with hyphens
     user_name = user_name.replace(" ", "-")

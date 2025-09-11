@@ -86,8 +86,8 @@ def fix_resume_formatting(resume: str) -> str:
 
     return remove_code_block(result)
 
-def save_resume(resume: str, job_description: JobDescription, keep_md = False):
-    save_md_to_pdf(resume, job_description, "resume", keep_md, ["-V", "fontSize=10pt"])
+def save_resume(resume: str, company_name: str, keep_md = False):
+    save_md_to_pdf(resume, company_name, "resume", keep_md, ["-V", "fontSize=10pt"])
 
 if __name__ == "__main__":
     import os
