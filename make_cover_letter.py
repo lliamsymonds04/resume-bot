@@ -58,7 +58,7 @@ async def make_cover_letter(input_data):
     return result
 
 def save_cover_letter(cover_letter: str, company_name: str, keep_md = False):
-    save_md_to_pdf(cover_letter, company_name, "cover_letter", keep_md, ["-V", "fontSize=11pt"])
+    save_md_to_pdf(cover_letter, company_name, "cover-letter", keep_md, ["-V", "fontSize=11pt"])
 
 if __name__ == "__main__":
     load_dotenv()
