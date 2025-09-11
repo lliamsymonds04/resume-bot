@@ -55,27 +55,31 @@ async def get_input_data(job_description: JobDescription):
 
     return input_data
 
-def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, additional_args: list):
+def get_output_path(company_name: str):
     user_name = "temp"
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
         user_name = me_data.get("name", "temp").lower()
 
-    base_path = f"output/{company_name}"
-
-    # Replace spaces with hyphens
     user_name = user_name.replace(" ", "-")
     base_path = base_path.replace(" ", "-")
+
+    base_path = f"output/{company_name}"
     os.makedirs(base_path, exist_ok=True)
 
-    md_file_path = f"{base_path}/generated-{tail_name}.md"
-    with open(md_file_path, "w", encoding="utf-8") as f:
-        f.write(md)
+    return {
+        "base_path": base_path,
+        "user_name": user_name
+    }
 
+def get_md_path(base_path: str, tail_name: str):
+    return f"{base_path}/generated-{tail_name}.md"
+
+def save_pdf(md_file_path: str, base_path: str, user_name: str, tail_name: str, additional_args: list):
     args = [
         "pandoc",
         md_file_path,
-        "-o", f"{base_path}/{user_name}-cover-letter.pdf",
+        "-o", f"{base_path}/{user_name}-{tail_name}.pdf",
         "--pdf-engine=xelatex",
         "-V", "geometry:margin=1in",
         "-V", "geometry:top=0.5in",
@@ -86,7 +90,17 @@ def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, ad
 
     subprocess.run(args, check=True)
 
+def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, additional_args: list):
+    output_paths = get_output_path(company_name)
+    base_path = output_paths["base_path"]
+    user_name = output_paths["user_name"]
+    
+    md_file_path = get_md_path(base_path, tail_name)
+    with open(md_file_path, "w", encoding="utf-8") as f:
+        f.write(md)
+
+    save_pdf(base_path, user_name, tail_name, additional_args)
+    
     # delete the markdown file
     if not keep_md:
         os.remove(md_file_path)
-
