@@ -1,12 +1,13 @@
 import asyncio
+import os
 import logging
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
 from screens.screen_base import Screen
-from fill_resume import save_resume
-from make_cover_letter import save_cover_letter
+from fill_resume import get_resume_format_args, save_resume
+from make_cover_letter import get_cover_letter_format_args, save_cover_letter
 from ai.resume_util import get_output_path, save_pdf, get_md_path
 
 ascii_art = r"""
@@ -91,7 +92,10 @@ class RelintScreen(Screen):
             self.add_line_to_status("• Relinting resume...")
             tail_name = "resume"
             md_file_path = get_md_path(output_path["base_path"], tail_name)
-            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, [])
+            #check the markdown exists
+            if not os.path.exists(md_file_path):
+                raise FileNotFoundError(f"Markdown file not found: {md_file_path}")
+            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_resume_format_args())
             self.add_line_to_status("✓ Resume relinted successfully!\n")
             relint_success = True
         except Exception as e:
@@ -107,7 +111,7 @@ class RelintScreen(Screen):
             self.add_line_to_status("• Relinting cover letter...")
             tail_name = "cover-letter"
             md_file_path = get_md_path(output_path["base_path"], tail_name)
-            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, [])
+            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_cover_letter_format_args())
             self.add_line_to_status("✓ Cover letter relinted successfully!\n")
         except Exception as e:
             logging.error(f"Error relinting cover letter: {e}")
@@ -116,7 +120,7 @@ class RelintScreen(Screen):
         self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
 
     def clear_input(self):
-        self.url_input.text = ""
+        self.job_input.text = ""
         self.status_label.text = ""
 
     def keybindings(self, app_state=None):
@@ -124,6 +128,7 @@ class RelintScreen(Screen):
 
         @kb.add("q")
         def _(event):
+            self.clear_input()
             app_state.switch_screen("landing")
 
         @kb.add("enter")
@@ -148,4 +153,5 @@ class RelintScreen(Screen):
 
     def on_show(self):
         from prompt_toolkit.application import get_app
+        self.clear_input()
         get_app().layout.focus(self.job_input)

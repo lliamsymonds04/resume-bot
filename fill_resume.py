@@ -86,8 +86,11 @@ def fix_resume_formatting(resume: str) -> str:
 
     return remove_code_block(result)
 
+def get_resume_format_args():
+    return ["-V", "fontSize=10pt"]
+
 def save_resume(resume: str, company_name: str, keep_md = False):
-    save_md_to_pdf(resume, company_name, "resume", keep_md, ["-V", "fontSize=10pt"])
+    save_md_to_pdf(resume, company_name, "resume", keep_md, get_resume_format_args())
 
 if __name__ == "__main__":
     import os
