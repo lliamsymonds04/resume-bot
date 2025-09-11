@@ -18,21 +18,14 @@ class AppState:
         self.screens[screen.name] = screen
         screen.db = self.db  # Provide db instance to screen
 
-    def switch_screen(self, name, *args, **kwargs):
-        """Switch to another screen.
-
-        Accepts optional positional and keyword payloads which will be
-        forwarded to the target screen's `on_show` method. This keeps
-        existing callers that pass a single positional payload working
-        (e.g. `switch_screen("job_description", job)`).
-        """
+    def switch_screen(self, name, **kwargs):
         self.current_screen = name
         screen = self.screens[name]
         self.app.layout = screen.layout()
         self.app.key_bindings = screen.keybindings(self)
         self.app.invalidate()  # redraw the screen
         if hasattr(screen, "on_show"):
-            screen.on_show(*args, **kwargs)
+            screen.on_show(**kwargs)
 
 # initialize database
 db = JobDatabase()

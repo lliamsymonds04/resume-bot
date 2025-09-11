@@ -1,11 +1,14 @@
-import os
 import logging
+import asyncio
+from time import sleep
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import Label
 from screens.screen_base import Screen
 from models.job_listing import JobListing
+from scraping.scrape_job_info import scrape_job_info
+from ai.parse_job import parse_job_description
 
 ascii_art = r"""
      ____.     ___.     ________                             .__        __  .__               
@@ -74,14 +77,41 @@ class JobDescriptionScreen(Screen):
         @kb.add("q")
         def _(event):
             self.clear_input()
-            app_state.switch_screen("landing")
+            app_state.switch_screen("find_jobs")
 
         @kb.add("enter")
         def _(event):
             pass
 
         return kb
+    
+    async def load_job(self, job: JobListing):
+        self.add_line_to_status(f"Loading Job Description for {job.title}...")
+        self.add_line_to_status("• Scraping job link...")
+
+        # Scrape job link to get full description
+        try:
+            raw_job_description = await scrape_job_info(job.link)
+        except Exception as e:
+            logging.error(f"Error scraping job info for {job.link}", exc_info=True)
+            self.add_line_to_status("Error retrieving job description.")
+            return
+
+        if not raw_job_description:
+            return
+        
+        # Parse job info
+        self.add_line_to_status("• Parsing job description...")
+        job_description = parse_job_description(raw_job_description)
+        self.add_line_to_status("✓ Job description loaded successfully!\n")
+        
+        sleep(0.5)  # small pause for effect
+        self.status_label.text = ""  # clear status
+        self.add_line_to_status(f"Job Title: {job.title}")
+        self.add_line_to_status(f"Company: {job.company}")
+        self.add_line_to_status(f"Location: {job.location}")
+        self.add_line_to_status(f"Description: {job_description}")
+
 
     def on_show(self, job: JobListing):
-        self.add_line_to_status("Loading Job Description...")
-        self.add_line_to_status(f"Job Title: {job.title}")
+        asyncio.create_task(self.load_job(job)) 
