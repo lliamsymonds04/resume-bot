@@ -7,7 +7,7 @@ from prompt_toolkit.widgets import TextArea, Label
 from ai.parse_job import parse_job_description
 from scraping.scrape_job_info import scrape_job_info
 from screens.screen_base import Screen
-from fill_resume import fill_resume, save_resume
+from make_resume import fill_resume, save_resume
 from make_cover_letter import make_cover_letter, save_cover_letter
 from ai.resume_util import get_input_data
 

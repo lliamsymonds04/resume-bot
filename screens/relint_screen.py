@@ -1,4 +1,3 @@
-import asyncio
 import os
 import logging
 from prompt_toolkit.key_binding import KeyBindings
@@ -6,7 +5,7 @@ from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
 from screens.screen_base import Screen
-from fill_resume import get_resume_format_args, save_resume
+from make_resume import get_resume_format_args, save_resume
 from make_cover_letter import get_cover_letter_format_args, save_cover_letter
 from ai.resume_util import get_output_path, save_pdf, get_md_path
 
