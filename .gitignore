@@ -140,12 +140,7 @@ cython_debug/
 
 texts/
 
-data/me.json
-data/coursework.json
-data/projects.json
-data/skills.json
-data/experience.json
-data/skills_cache.json
+data/
 
 output/
 

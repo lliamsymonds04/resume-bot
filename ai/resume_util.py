@@ -77,7 +77,11 @@ def get_output_path(company_name: str):
 def get_md_path(base_path: str, tail_name: str):
     return f"{base_path}/generated-{tail_name}.md"
 
-def save_pdf(md_file_path: str, base_path: str, user_name: str, tail_name: str, additional_args: list):
+def save_pdf(md_file_path: str, base_path: str, user_name: str, tail_name: str, additional_args: list = None):
+    # defensive default
+    if additional_args is None:
+        additional_args = []
+
     args = [
         "pandoc",
         md_file_path,
@@ -88,7 +92,8 @@ def save_pdf(md_file_path: str, base_path: str, user_name: str, tail_name: str, 
         "-V", "pagestyle=empty"
     ]
 
-    args.extend(additional_args)
+    # copy additional_args to avoid side-effects
+    args = args + list(additional_args)
 
     subprocess.run(args, check=True)
 
@@ -101,7 +106,7 @@ def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, ad
     with open(md_file_path, "w", encoding="utf-8") as f:
         f.write(md)
 
-    save_pdf(base_path, user_name, tail_name, additional_args)
+    save_pdf(md_file_path, base_path, user_name, tail_name, additional_args)
     
     # delete the markdown file
     if not keep_md:
