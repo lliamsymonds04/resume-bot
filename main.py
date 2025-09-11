@@ -4,15 +4,18 @@ from screens.landing_screen import LandingScreen
 from screens.config_screen import ConfigScreen
 from screens.manual_apply import ManualApplyScreen
 from screens.relint_screen import RelintScreen
+from services.job_database import JobDatabase
 
 class AppState:
-    def __init__(self, app):
+    def __init__(self, app, db):
         self.app = app
+        self.db = db
         self.screens = {}
         self.current_screen = "main"
 
     def add_screen(self, screen):
         self.screens[screen.name] = screen
+        screen.db = self.db  # Provide db instance to screen
 
     def switch_screen(self, name):
         self.current_screen = name
@@ -23,9 +26,13 @@ class AppState:
         if hasattr(screen, "on_show"):
             screen.on_show()
 
+# initialize database
+db = JobDatabase()
+db.clear_old_jobs() 
+
 # start app
 app = Application(full_screen=True)
-app_state = AppState(app)
+app_state = AppState(app, db)
 
 # screens
 landing_screen = LandingScreen()

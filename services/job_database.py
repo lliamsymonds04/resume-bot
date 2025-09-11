@@ -128,11 +128,16 @@ class JobDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                cursor.execute("""
-                    DELETE FROM JobListings 
-                    WHERE scraped_at < datetime('now', '-{} days')
-                """.format(days))
-                
+                # Use parameterized modifier for sqlite datetime
+                modifier = f"-{days} days"
+                cursor.execute(
+                    """
+                    DELETE FROM JobListings
+                    WHERE scraped_at <= datetime('now', ?)
+                    """,
+                    (modifier,)
+                )
+
                 deleted_count = cursor.rowcount
                 conn.commit()
                 logger.info(f"Deleted {deleted_count} old jobs")
@@ -141,3 +146,45 @@ class JobDatabase:
         except Exception as e:
             logger.error(f"Error clearing old jobs: {e}")
             return 0
+
+    def purge_old_jobs(self, days: int = 1) -> int:
+        """Delete jobs older than `days` days. Returns number of rows deleted.
+
+        This is a synchronous function you can call at startup or on-demand.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                modifier = f"-{days} days"
+                cursor.execute(
+                    """
+                    DELETE FROM JobListings
+                    WHERE scraped_at <= datetime('now', ?)
+                    """,
+                    (modifier,)
+                )
+                deleted = cursor.rowcount
+                conn.commit()
+                logger.info(f"Purged {deleted} jobs older than {days} days")
+                return deleted
+        except Exception as e:
+            logger.error(f"Error purging old jobs: {e}")
+            return 0
+
+    # def schedule_periodic_purge(self, interval_minutes: int = 60, days: int = 1):
+    #     """Schedule a periodic purge running in the current event loop.
+
+    #     Call this after the application's asyncio event loop is running. Returns
+    #     the created Task so the caller can keep a reference if desired.
+    #     """
+    #     loop = asyncio.get_event_loop()
+    #     return loop.create_task(self._purge_loop(interval_minutes, days))
+
+    # async def _purge_loop(self, interval_minutes: int, days: int):
+    #     while True:
+    #         try:
+    #             deleted = self.purge_old_jobs(days=days)
+    #             logger.info(f"Periodic purge removed {deleted} old jobs")
+    #         except Exception:
+    #             logger.exception("Error during periodic purge")
+    #         await asyncio.sleep(interval_minutes * 60)
