@@ -26,7 +26,7 @@ class RelintScreen(Screen):
         self.job_input = TextArea(
             text="",
             height=1,
-            multiline=True,
+            multiline=False,
             scrollbar=False,
             wrap_lines=True
         )
@@ -47,13 +47,12 @@ class RelintScreen(Screen):
         
         # Input form
         form_content = HSplit([
-            Label(text="Use to update pdfs from markdown if self-edits were made.\n"),
-            Label(text=""),  # Spacer
+            Label(text="Enter name of job:"),
             self.job_input,
             Label(text=""),  # Spacer
             self.status_label,
             Label(text=""),  # Spacer
-            Label(text="Press Enter to relint cv | Press Ctrl+C to clear | Press 'q' to go back"),
+            Label(text="Press Enter to relint folder | Press Ctrl+C to clear | Press 'q' to go back"),
         ])
         
         # Combine header and form
@@ -67,7 +66,7 @@ class RelintScreen(Screen):
         frags = []
         frags.append(("", ascii_art))
         frags.append(("", "\n" + "="*self.line_len + "\n"))
-        frags.append(("", "Enter name of job:\n"))
+        frags.append(("", "Use to update pdfs from markdown if self-edits were made.\n"))
         return frags
 
     def layout(self):
