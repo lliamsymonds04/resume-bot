@@ -5,8 +5,8 @@ from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
 from screens.screen_base import Screen
-from make_resume import get_resume_format_args, save_resume
-from make_cover_letter import get_cover_letter_format_args, save_cover_letter
+from make_resume import get_resume_format_args
+from make_cover_letter import get_cover_letter_format_args
 from ai.resume_util import get_output_path, save_pdf, get_md_path
 
 ascii_art = r"""
