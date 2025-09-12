@@ -1,5 +1,6 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
+from prompt_toolkit.widgets import Label
 from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
 
@@ -13,25 +14,44 @@ ascii_art = r"""__________                                     __________       
 class LandingScreen(Screen):
     def __init__(self):
         super().__init__("landing")
-        self.control = FormattedTextControl(self.render, focusable=True)
-        self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
         self.state = {"selection": 0}
         self.options = ["Find Jobs", "Manual Apply", "Config", "Relint"]
 
+        self.control = FormattedTextControl(self.render, focusable=True)
+        self.footer = FormattedTextControl(self.get_default_controls)
+
+        self.create_layout()
+
     def render(self):
         frags = []
-        frags.append(("", ascii_art))
-        frags.append(("", "\n" + "="*self.line_len + "\n"))
-        frags.append(("", "Welcome to Resume Bot!\n\n"))
         frags.append(("", "Options:\n"))
 
         # render options
         rendered_options = self.render_options()
         frags.extend(rendered_options)
 
-        controls = self.get_default_controls()
-        frags.extend(controls)
         return frags
+
+    def create_layout(self):
+        art_height = len(ascii_art.splitlines())
+        header = HSplit([
+            Window(content=FormattedTextControl(ascii_art), height=art_height + 1, always_hide_cursor=True),
+            Window(height=1, char="=", style="class:line"),
+            Label(text="Welcome to Resume Bot!\n"),
+        ])
+        
+        # Input form (use a Window for the dynamic main content)
+        form_content = HSplit([
+            Window(content=self.control, always_hide_cursor=True, height=len(self.options) + 2),
+            Window(height=1, char="-", style="class:line"),
+            Label(text=self.get_default_controls()),
+        ])
+        
+        # Combine header and form
+        self.container = HSplit([
+            header,
+            form_content
+        ])
 
     def layout(self):
         return Layout(self.container)

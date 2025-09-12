@@ -57,8 +57,8 @@ class Screen:
             q_action = "back"
 
         controls = [
-            ("", "\n" + "="*self.line_len),
-            ("", f"\n[j] down, [k] up, [enter] select, [q] {q_action}.\n")
+            # ("", "\n" + "="*self.line_len),
+            ("", f"[j] down, [k] up, [enter] select, [q] {q_action}.\n")
         ]
         return controls
     
