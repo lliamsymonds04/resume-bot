@@ -77,13 +77,6 @@ class ApplyScreen(Screen):
     def layout(self):
         return Layout(self.container)
 
-    def add_line_to_status(self, line):
-        """Add a line to the status label"""
-        if self.status_label.text:
-            self.status_label.text += "\n"
-        self.status_label.text += line
-        self.redraw()
-
     def clear_input(self):
         self.status_label.text = ""
         self.notes_input.text = ""

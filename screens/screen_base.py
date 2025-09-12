@@ -35,6 +35,16 @@ class Screen:
     def redraw(self):
         get_app().invalidate()
 
+    def add_line_to_status(self, line):
+        """Add a line to the status label"""
+        if self.status_label is None:
+            return
+
+        if self.status_label.text:
+            self.status_label.text += "\n"
+        self.status_label.text += line
+        self.redraw()
+
     def keybindings(self, app_state):
         """Return screen-specific keybindings"""
         kb = KeyBindings()

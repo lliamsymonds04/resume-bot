@@ -96,13 +96,6 @@ class ManualApplyScreen(Screen):
         
         return True, ""
 
-    def add_line_to_status(self, line):
-        """Add a line to the status label"""
-        if self.status_label.text:
-            self.status_label.text += "\n"
-        self.status_label.text += line
-        self.redraw()
-
     async def process_job(self):
         """Process the job application"""
         
