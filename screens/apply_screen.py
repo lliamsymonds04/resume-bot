@@ -1,9 +1,10 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.widgets import Label
+from prompt_toolkit.widgets import Label, TextArea
 from screens.screen_base import Screen
 from models.job_description import JobDescription
+from prompt_toolkit.application import get_app
 
 ascii_art = r"""
    _____                .__         .__                
@@ -17,10 +18,18 @@ ascii_art = r"""
 class ApplyScreen(Screen):
     def __init__(self):
         super().__init__("apply")
-        self.loaded = False
-        
+
         # Status display
         self.status_label = Label(text="")
+        self.notes_input = TextArea(
+            text="",
+            height=5,
+            multiline=True,
+            scrollbar=True,
+            wrap_lines=True
+        ) 
+
+        self.note_given = False
         
         # Create the layout
         self.create_layout()
@@ -29,17 +38,29 @@ class ApplyScreen(Screen):
         # Header
         header = Window(
             content=FormattedTextControl(ascii_art),
-            height=8,
+            height=6,
             always_hide_cursor=True
         )
         
-        # Input form
-        form_content = HSplit([
-            Window(height=1, char="=", style="class:line"),
-            self.status_label,
-            Label(text=""),
-            Window(height=1, char="-", style="class:line"),
-        ])
+        if self.note_given:
+            form_content = HSplit([
+                Window(height=1, char="=", style="class:line"),
+                self.status_label,
+                Label(text=""),
+                Window(height=1, char="-", style="class:line"),
+                Label(text="Press 'q' to go back to job listings"),
+            ])
+        else:
+            form_content = HSplit([
+                Window(height=1, char="=", style="class:line"),
+                Label(text="Type additional notes for the AI here"),
+                self.notes_input,
+                Label(text=""),
+                self.status_label,
+                Label(text=""),
+                Window(height=1, char="-", style="class:line"),
+                Label(text="Press Ctrl+S to save note | Press 'q' to go back to job listings"),
+            ])
         
         # Combine header and form
         self.container = HSplit([
@@ -64,6 +85,8 @@ class ApplyScreen(Screen):
 
     def clear_input(self):
         self.status_label.text = ""
+        self.notes_input.text = ""
+        self.note_given = False
 
     def keybindings(self, app_state=None):
         kb = KeyBindings()
@@ -80,4 +103,7 @@ class ApplyScreen(Screen):
         return kb
 
     def on_show(self, job_description: JobDescription):
-        pass
+        self.clear_input()
+        self.job_description = job_description
+        app = get_app()
+        app.layout.focus(self.notes_input)
