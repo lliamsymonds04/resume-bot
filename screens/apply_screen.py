@@ -1,7 +1,11 @@
+import asyncio
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import Label, TextArea
+from ai.resume_util import get_input_data
+from make_cover_letter import make_cover_letter, save_cover_letter
+from make_resume import save_resume, make_resume
 from screens.screen_base import Screen
 from models.job_description import JobDescription
 from prompt_toolkit.application import get_app
@@ -43,7 +47,6 @@ class ApplyScreen(Screen):
 
         if self.note_given:
             form_content = HSplit([
-                Window(height=1, char="=", style="class:line"),
                 self.status_label,
                 Label(text=""),
                 Window(height=1, char="-", style="class:line"),
@@ -51,7 +54,6 @@ class ApplyScreen(Screen):
             ])
         else:
             form_content = HSplit([
-                Window(height=1, char="=", style="class:line"),
                 Label(text="Type additional notes for the AI here"),
                 self.notes_input,
                 Label(text=""),
@@ -87,6 +89,29 @@ class ApplyScreen(Screen):
         self.notes_input.text = ""
         self.note_given = False
 
+    async def process_application(self, job_description: JobDescription, notes: str):
+        self.add_line_to_status("Processing application...")
+
+        self.add_line_to_status(f"• Tailoring skills...")
+
+        input_data = await get_input_data(job_description)
+        input_data["additional_notes"] = notes
+
+        self.add_line_to_status(f"✓ Skills tailored successfully")
+        self.add_line_to_status(f"• Generating resume...")
+        
+        resume = await make_resume(input_data)
+        save_resume(resume, job_description.company, keep_md=True)
+        
+        self.add_line_to_status(f"✓ Successfully generated resume")
+        self.add_line_to_status(f"• Generating cover letter...")
+
+        cover_letter = await make_cover_letter(input_data)
+        save_cover_letter(cover_letter, job_description.company, keep_md=True)
+        
+        self.add_line_to_status(f"✓ Successfully generated cover letter")
+        self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
+
     def keybindings(self, app_state=None):
         kb = KeyBindings()
 
@@ -97,7 +122,14 @@ class ApplyScreen(Screen):
 
         @kb.add("enter")
         def _(event):
-            pass
+            if self.note_given:
+                # Already given note, do nothing
+                return
+
+            notes = self.notes_input.text.strip()
+            self.note_given = True
+
+            asyncio.create_task(self.process_application(self.job_description, notes))
 
         return kb
 

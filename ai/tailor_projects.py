@@ -25,7 +25,6 @@ async def tailor_projects(job_description: JobDescription, num_projects: int = 3
         doc = Document(page_content=content, metadata=project.model_dump())
         project_docs.append(doc)
 
-    # embeddings = OpenAIEmbeddings()
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vs = FAISS.from_documents(project_docs, embeddings)
 
@@ -37,13 +36,6 @@ async def tailor_projects(job_description: JobDescription, num_projects: int = 3
     """
 
     retrieved_docs = vs.similarity_search(prompt, k=num_projects)
-
-    #! dont delete this code. Could reuse in a coroutine
-    # tailored_projects = []
-    # for doc in retrieved_docs:
-        # Expand the project to be more relevant to the job description
-        # p = await expand_project_for_job(job_description, Project(**doc.metadata))
-        # tailored_projects.append(p)
 
     base_projects = Projects(projects=[Project(**doc.metadata) for doc in retrieved_docs])
     tailored_projects = await expand_projects_for_job(job_description, base_projects)

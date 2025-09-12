@@ -58,11 +58,14 @@ def create_resume_filling_prompt():
         **Expected Output:**
 
         Provide only the markdown with the arguments filled with the tailored information.
+
+        **Additional Notes:**
+        {additional_notes}
         """)
 
     return prompt
 
-async def fill_resume(input_data: dict):
+async def make_resume(input_data: dict):
     prompt = create_resume_filling_prompt()
 
     llm = get_llm(0.3, "light")
@@ -103,7 +106,7 @@ if __name__ == "__main__":
     llm = get_llm()
     job_d = parse_job_description(job_info, llm)
 
-    result = fill_resume(job_d)
+    result = make_resume(job_d)
     result = fix_resume_formatting(result)
 
     #save the file

@@ -63,6 +63,9 @@ def cover_letter_prompt():
     - Use the two spaces at the end of a line to separate lines
     - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name. Make sure the sign-off and the name are on different lines using two spaces
     - Do not use em-dashes (—) or special characters. Do not use any common giveaways of AI-generated text like "I am excited to apply..." or "Based on the job description..." or "foundation" or "With a..."
+
+    Additional Notes:
+    {additional_notes}
     """)
 
     return prompt

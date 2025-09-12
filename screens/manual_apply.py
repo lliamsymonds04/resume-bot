@@ -7,7 +7,7 @@ from prompt_toolkit.widgets import TextArea, Label
 from ai.parse_job import parse_job_description
 from job_scraping import scrape_job_description
 from screens.screen_base import Screen
-from make_resume import fill_resume, save_resume
+from make_resume import make_resume, save_resume
 from make_cover_letter import make_cover_letter, save_cover_letter
 from ai.resume_util import get_input_data
 
@@ -131,7 +131,7 @@ class ManualApplyScreen(Screen):
             self.add_line_to_status(f"✓ Skills tailored successfully")
             self.add_line_to_status(f"• Generating resume...")
             
-            resume = await fill_resume(input_data)
+            resume = await make_resume(input_data)
             save_resume(resume, job_description.company, keep_md=True)
             
             self.add_line_to_status(f"✓ Successfully generated resume")
