@@ -25,7 +25,6 @@ class ApplyScreen(Screen):
             text="",
             height=5,
             multiline=True,
-            scrollbar=True,
             wrap_lines=True
         ) 
 
@@ -36,12 +35,12 @@ class ApplyScreen(Screen):
 
     def create_layout(self):
         # Header
-        header = Window(
-            content=FormattedTextControl(ascii_art),
-            height=6,
-            always_hide_cursor=True
-        )
-        
+        art_height = len(ascii_art.splitlines())
+        header = HSplit([
+            Window(content=FormattedTextControl(ascii_art), height=art_height, always_hide_cursor=True),
+            Window(height=1, char="=", style="class:line"),
+        ])
+
         if self.note_given:
             form_content = HSplit([
                 Window(height=1, char="=", style="class:line"),
@@ -59,7 +58,7 @@ class ApplyScreen(Screen):
                 self.status_label,
                 Label(text=""),
                 Window(height=1, char="-", style="class:line"),
-                Label(text="Press Ctrl+S to save note | Press 'q' to go back to job listings"),
+                Label(text="Enter | Press 'q' to go back to job listings"),
             ])
         
         # Combine header and form

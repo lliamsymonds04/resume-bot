@@ -31,16 +31,14 @@ class JobDescriptionScreen(Screen):
         self.create_layout()
 
     def create_layout(self):
-        # Header
-        header = Window(
-            content=FormattedTextControl(ascii_art),
-            height=8,
-            always_hide_cursor=True
-        )
+        art_height = len(ascii_art.splitlines())
+        header = HSplit([
+            Window(content=FormattedTextControl(ascii_art), height=art_height, always_hide_cursor=True),
+            Window(height=1, char="=", style="class:line"),
+        ])
         
         # Input form
         form_content = HSplit([
-            Window(height=1, char="=", style="class:line"),
             self.status_label,
             Label(text=""),
             Window(height=1, char="-", style="class:line"),
@@ -143,6 +141,7 @@ class JobDescriptionScreen(Screen):
 
 
     def on_show(self, job: JobListing):
-        self.loaded = False
-        self.status_label.text = ""
-        asyncio.create_task(self.load_job(job)) 
+        if job is not None:
+            self.loaded = False
+            self.status_label.text = ""
+            asyncio.create_task(self.load_job(job)) 
