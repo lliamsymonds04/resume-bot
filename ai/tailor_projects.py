@@ -10,7 +10,48 @@ from pydantic import BaseModel
 class Projects(BaseModel):
     projects: list[Project]
 
+projects_parser = PydanticOutputParser(pydantic_object=Projects)
+
+def generate_project_prompt():
+    prompt = """
+    You are a resume tailoring expert. Your task is to pick the {num_projects} most relevant projects from the provided list based on the given job description.
+    Always choose harder projects over easier ones.
+    Focus on projects that best align with the skills, experiences, and requirements outlined in the job description.
+    Also, expand on the project to make it more relevant to the job description.
+    Do not change the title. Do not lie about my skills or process
+    Do not talk about programming languages or tools that i did not use.
+    Always mention the programming languages and the tools
+    Keep the description concise and focused on the key aspects. It is for a resume
+    Do not talk about external teams or stakeholders if none are mentioned
+    
+    Job Description:
+    {job_description}
+    
+    Projects:
+    {projects}
+    
+    Format instructions:
+    {format_instructions}
+    """
+    return prompt
+
 async def tailor_projects(job_description: JobDescription, num_projects: int = 3):
+    with open("data/projects.json", "r") as f:
+        projects_raw = json.load(f)
+
+    prompt = generate_project_prompt()
+    llm = get_llm(0.3)
+    response = await llm.ainvoke(prompt.format(
+        num_projects=num_projects,
+        job_description=job_description.model_dump(),
+        projects=json.dumps(projects_raw, indent=2),
+        format_instructions=projects_parser.get_format_instructions()
+    ))
+    
+    return projects_parser.parse(response.content)
+
+
+async def tailor_projects_old(job_description: JobDescription, num_projects: int = 3):
     #load the projects json
     with open("data/projects.json", "r") as f:
         projects_raw = json.load(f)
