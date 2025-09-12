@@ -56,11 +56,7 @@ class Screen:
         else:
             q_action = "back"
 
-        controls = [
-            # ("", "\n" + "="*self.line_len),
-            ("", f"[j] down, [k] up, [enter] select, [q] {q_action}.\n")
-        ]
-        return controls
+        return  f"[j] down, [k] up, [enter] select, [q] {q_action}.\n"
     
     def render_options(self):
         result = []
@@ -76,11 +72,11 @@ class Screen:
         @kb.add("j")
         def _(event):
             self.state["selection"] = (self.state["selection"] + 1) % len(self.options)
-            self.control.text = self.render()
+            self.control.text = self.render_options()
             event.app.invalidate()
 
         @kb.add("k")
         def _(event):
             self.state["selection"] = (self.state["selection"] - 1) % len(self.options)
-            self.control.text = self.render()
+            self.control.text = self.render_options()
             event.app.invalidate()

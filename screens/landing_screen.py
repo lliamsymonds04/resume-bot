@@ -4,7 +4,8 @@ from prompt_toolkit.widgets import Label
 from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
 
-ascii_art = r"""__________                                     __________        __   
+ascii_art = r"""
+__________                                     __________        __   
 \______   \ ____   ________ __  _____   ____   \______   \ _____/  |_ 
  |       _// __ \ /  ___/  |  \/     \_/ __ \   |    |  _//  _ \   __\
  |    |   \  ___/ \___ \|  |  /  Y Y  \  ___/   |    |   (  <_> )  |  
@@ -17,31 +18,22 @@ class LandingScreen(Screen):
         self.state = {"selection": 0}
         self.options = ["Find Jobs", "Manual Apply", "Config", "Relint"]
 
-        self.control = FormattedTextControl(self.render, focusable=True)
+        self.control = FormattedTextControl(self.render_options(), focusable=True)
         self.footer = FormattedTextControl(self.get_default_controls)
 
         self.create_layout()
 
-    def render(self):
-        frags = []
-        frags.append(("", "Options:\n"))
-
-        # render options
-        rendered_options = self.render_options()
-        frags.extend(rendered_options)
-
-        return frags
-
     def create_layout(self):
         art_height = len(ascii_art.splitlines())
         header = HSplit([
-            Window(content=FormattedTextControl(ascii_art), height=art_height + 1, always_hide_cursor=True),
+            Window(content=FormattedTextControl(ascii_art), height=art_height, always_hide_cursor=True),
             Window(height=1, char="=", style="class:line"),
             Label(text="Welcome to Resume Bot!\n"),
         ])
         
         # Input form (use a Window for the dynamic main content)
         form_content = HSplit([
+            Label(text="Options:"),
             Window(content=self.control, always_hide_cursor=True, height=len(self.options) + 2),
             Window(height=1, char="-", style="class:line"),
             Label(text=self.get_default_controls()),
