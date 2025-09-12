@@ -5,9 +5,8 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from screens.screen_base import Screen
-from scraping.get_jobs import scrape_jobs
+from job_scraping import scrape_jobs
 from ai.parse_job import parse_job_listings
-# from services.job_database import JobDatabase
 
 from models.job_listing import JobListing
 

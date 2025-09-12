@@ -5,7 +5,7 @@ from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Label
 from ai.parse_job import parse_job_description
-from scraping.scrape_job_info import scrape_job_info
+from job_scraping import scrape_job_description
 from screens.screen_base import Screen
 from make_resume import fill_resume, save_resume
 from make_cover_letter import make_cover_letter, save_cover_letter
@@ -118,10 +118,10 @@ class ManualApplyScreen(Screen):
             self.add_line_to_status(f"• Scraping the url...")
             
             with self.suppress_output():
-                job_info = await scrape_job_info(url)
+                raw_description = await scrape_job_description(url)
 
             self.add_line_to_status(f"• Processing job information...")
-            job_description = parse_job_description(job_info)
+            job_description = parse_job_description(raw_description)
 
             self.add_line_to_status(f"✓ Successfully processed job from URL")
             self.add_line_to_status(f"• Tailoring skills...")
