@@ -5,6 +5,7 @@ from screens.landing_screen import LandingScreen
 from screens.config_screen import ConfigScreen
 from screens.manual_apply import ManualApplyScreen
 from screens.relint_screen import RelintScreen
+from screens.apply_screen import ApplyScreen
 from services.job_database import JobDatabase
 
 class AppState:
@@ -42,9 +43,10 @@ find_jobs_screen = FindJobsScreen()
 manual_apply_screen = ManualApplyScreen()
 relint_screen = RelintScreen() 
 job_description_screen = JobDescriptionScreen()
+apply_screen = ApplyScreen()
 
 # add screens
-screens = [landing_screen, config_screen, find_jobs_screen, manual_apply_screen, relint_screen, job_description_screen] 
+screens = [landing_screen, config_screen, find_jobs_screen, manual_apply_screen, relint_screen, job_description_screen, apply_screen] 
 for screen in screens:
     app_state.add_screen(screen)
     

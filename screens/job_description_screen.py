@@ -87,7 +87,9 @@ class JobDescriptionScreen(Screen):
 
         @kb.add("enter")
         def _(event):
-            pass
+            if not self.loaded:
+                return
+            app_state.switch_screen("apply", job_description=self.job_description)
 
         return kb
     
