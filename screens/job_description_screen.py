@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import webbrowser
 from time import sleep
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
@@ -26,6 +27,8 @@ class JobDescriptionScreen(Screen):
         
         # Status display
         self.status_label = Label(text="")
+
+        self.control_label = Label(text="")
         
         # Create the layout
         self.create_layout()
@@ -42,7 +45,7 @@ class JobDescriptionScreen(Screen):
             self.status_label,
             Label(text=""),
             Window(height=1, char="-", style="class:line"),
-            Label(text=self.get_controls_text()),
+            self.control_label,
         ])
         
         # Combine header and form
@@ -56,11 +59,13 @@ class JobDescriptionScreen(Screen):
         frags.append(("", ascii_art))
         return frags
 
-    def get_controls_text(self):
+    def update_controls_text(self):
         if self.loaded:
-            return "Press [enter] to apply | [q] to go back."
+            self.control_label.text = "Press [o] to open link | [enter] to apply | [q] to go back."
         else:
-            return "Press [q] to go back."
+            self.control_label.text = "Press [q] to go back."
+        
+        self.redraw()
 
     def layout(self):
         return Layout(self.container)
@@ -75,6 +80,22 @@ class JobDescriptionScreen(Screen):
         def _(event):
             self.clear_input()
             app_state.switch_screen("find_jobs")
+        
+        @kb.add("o")
+        def _(event):
+            # open job link in browser
+            if self.job_listing:
+                url = getattr(self.job_listing, "link", None)
+                if not url:
+                    self.add_line_to_status("No URL available for this job.")
+                    return
+
+                try:
+                    webbrowser.open_new_tab(url)
+                    self.add_line_to_status(f"Opened link in browser: {url}")
+                except Exception as e:
+                    logging.exception("Failed to open browser")
+                    self.add_line_to_status("Failed to open link in browser.")
 
         @kb.add("enter")
         def _(event):
@@ -104,10 +125,10 @@ class JobDescriptionScreen(Screen):
         self.add_line_to_status("• Parsing job description...")
         job_description = parse_job_description(raw_job_description)
         self.add_line_to_status("✓ Job description loaded successfully!\n")
-        self.redraw()
         
         self.loaded = True
         self.status_label.text = ""  # clear status
+        self.update_controls_text()
         self.add_line_to_status(f"Job Title: {job.title}")
         self.add_line_to_status(f"Company: {job.company}")
         self.add_line_to_status(f"Location: {job.location}")
@@ -137,4 +158,6 @@ class JobDescriptionScreen(Screen):
         if job is not None:
             self.loaded = False
             self.status_label.text = ""
+            self.job_listing = job
+            self.update_controls_text()
             asyncio.create_task(self.load_job(job)) 
