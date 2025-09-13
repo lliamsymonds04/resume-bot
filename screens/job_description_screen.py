@@ -1,7 +1,6 @@
 import logging
 import asyncio
 import webbrowser
-from time import sleep
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl

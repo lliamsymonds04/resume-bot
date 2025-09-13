@@ -1,4 +1,5 @@
 import asyncio
+from time import sleep
 import logging
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
@@ -97,7 +98,7 @@ class ManualApplyScreen(Screen):
         
         return True, ""
 
-    async def process_job(self):
+    async def process_job(self, app_state):
         """Process the job application"""
         
         try:
@@ -116,26 +117,11 @@ class ManualApplyScreen(Screen):
 
             self.add_line_to_status(f"• Processing job information...")
             job_description = parse_job_description(raw_description)
+            self.add_line_to_status(f"✓ Processed job, redirecting to application screen...")
 
-            self.add_line_to_status(f"✓ Successfully processed job from URL")
-            self.add_line_to_status(f"• Tailoring skills...")
-
-            input_data = await get_input_data(job_description)
-
-            self.add_line_to_status(f"✓ Skills tailored successfully")
-            self.add_line_to_status(f"• Generating resume...")
-            
-            resume = await make_resume(input_data)
-            save_resume(resume, job_description.company, keep_md=True)
-            
-            self.add_line_to_status(f"✓ Successfully generated resume")
-            self.add_line_to_status(f"• Generating cover letter...")
-
-            cover_letter = await make_cover_letter(input_data)
-            save_cover_letter(cover_letter, job_description.company, keep_md=True)
-            
-            self.add_line_to_status(f"✓ Successfully generated cover letter")
-            self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
+            #need to route to the apply screen from here
+            sleep(0.5)  # Give time for status to update
+            app_state.switch_screen("apply", job_description=job_description)
 
         except Exception as e:
             logging.error(f"Error processing job: {e}")
@@ -152,7 +138,7 @@ class ManualApplyScreen(Screen):
         @kb.add("enter")
         def _(event):
             # Process the job when Enter is pressed
-            asyncio.create_task(self.process_job())
+            asyncio.create_task(self.process_job(app_state))
 
         @kb.add("c-c")  # Ctrl+C
         def _(event):
