@@ -10,19 +10,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers import PydanticOutputParser
 from tavily import TavilyClient
 
-def writing_style_prompt():
-    prompt = ChatPromptTemplate.from_template("""
-    You will analyze a cover letter and return a JSON with keys:
-    tone, sentence_length, paragraph_spacing, greeting_style, signoff_style, common_phrases.
-    Return only valid JSON.
-
-    Example input: "{cover_letter_text}"
-
-    Example output:
-    {{"tone":"concise, confident","sentence_length":"mixed","paragraph_spacing":"double","greeting_style":"Dear Hiring Team,","signoff_style":"Sincerely,  <Full Name>","common_phrases":["track record","delivered","led cross-functional"]}}
-    """)
-    return prompt
-
 def cover_letter_prompt():
     prompt = ChatPromptTemplate.from_template("""
     You are an expert cover letter writer who crafts professional, polished, and ATS-friendly markdown cover letters.
@@ -47,9 +34,6 @@ def cover_letter_prompt():
     Here is additional information about the company from the web search:
     {company_info}
 
-    Writing style (JSON): {style_spec}
-    Follow these style constraints when crafting the letter.
-
     Instructions:
     - Make the title the candidate's name from `my_data`
     - Include the contact information from `my_data`. Format websites in Markdown so that they are clickable links: [url](URL). 
@@ -70,6 +54,9 @@ def cover_letter_prompt():
 
     Additional Notes:
     {additional_notes}
+
+    Example Cover Letter i want you to mimic in style and tone:
+    {example_cover_letter}
     """)
 
     return prompt
@@ -96,7 +83,6 @@ async def make_cover_letter(input_data):
     if asyncio.iscoroutine(input_data):
         input_data = await input_data
 
-    writing_style_prompt_instance = writing_style_prompt()
     cover_letter_prompt_instance = cover_letter_prompt()
 
     with open("data/example_cover_letter.md", "r") as f:
@@ -106,18 +92,8 @@ async def make_cover_letter(input_data):
     llm = get_llm(0.3, "good")
     chain = cover_letter_prompt_instance | llm | StrOutputParser()
 
-    style_chain = writing_style_prompt_instance | llm | StrOutputParser()
-    WritingStyleSpecParser = PydanticOutputParser(pydantic_object=WritingStyleSpec)
-    try:
-        style_json = await style_chain.ainvoke({"cover_letter_text": example_cover_letter})
-        style_spec = WritingStyleSpecParser.parse(style_json)
-        # Try parsing directly into the pydantic model
-    except Exception as e:
-        print("Error running style chain:", e)
-        style_spec = WritingStyleSpec()
-
     run_input = dict(input_data)
-    run_input["style_spec"] = style_spec.model_dump()
+    run_input["example_cover_letter"] = example_cover_letter
 
     company_info = search_company(input_data["job_description"])
     run_input["company_info"] = company_info
