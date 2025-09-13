@@ -1,5 +1,5 @@
 import asyncio
-import json
+import os
 from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
 from models.job_description import JobDescription
@@ -8,6 +8,7 @@ from ai.llm_config import get_llm
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers import PydanticOutputParser
+from tavily import TavilyClient
 
 def writing_style_prompt():
     prompt = ChatPromptTemplate.from_template("""
@@ -43,6 +44,9 @@ def cover_letter_prompt():
     Coursework:
     {coursework}
 
+    Here is additional information about the company from the web search:
+    {company_info}
+
     Writing style (JSON): {style_spec}
     Follow these style constraints when crafting the letter.
 
@@ -70,6 +74,14 @@ def cover_letter_prompt():
 
     return prompt
 
+def search_company(job_description: JobDescription):
+    # Use an API to search for the company and get more details
+    client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+    response = client.search(
+        query= f"Company information and projects for {job_description.company}",
+        include_answer="basic"
+    )
+    return response.get("answer", job_description.company)
 
 class WritingStyleSpec(BaseModel):
     tone: str = ""
@@ -106,6 +118,9 @@ async def make_cover_letter(input_data):
 
     run_input = dict(input_data)
     run_input["style_spec"] = style_spec.model_dump()
+
+    company_info = search_company(input_data["job_description"])
+    run_input["company_info"] = company_info
 
     result = await chain.ainvoke(run_input)
     result = remove_code_block(result)
