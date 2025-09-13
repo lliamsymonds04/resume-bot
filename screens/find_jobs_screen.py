@@ -141,14 +141,8 @@ class FindJobsScreen(Screen):
         current_job = self.jobs[self.current_job_index]
         job_text = self.get_job_text(current_job)
         
-        # Add navigation info
-        nav_info = f"\nJob {self.current_job_index + 1} of {len(self.jobs)} (showing last 50)"
-        nav_help = "\nPress 'j' for next, 'k' for previous, 'r' to refresh, 'q' to go back"
         
-        frags.append(("", job_text + "\n"))
-        # frags.append(("", "\n" + "="*self.line_len))
-        # frags.append(Window(height=1, char="-", style="class:line"))
-        # frags.append(("", nav_info + nav_help))
+        frags.append(("", job_text))
 
         return frags
        
