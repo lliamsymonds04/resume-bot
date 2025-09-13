@@ -4,6 +4,7 @@ import textwrap
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.widgets import Label
 from screens.screen_base import Screen
 from job_scraping import scrape_jobs
 from ai.parse_job import parse_job_listings
@@ -25,12 +26,38 @@ class FindJobsScreen(Screen):
     def __init__(self):
         super().__init__("find_jobs")
         self.control = FormattedTextControl(self.render, focusable=True)
-        self.container = HSplit([Window(content=self.control, always_hide_cursor=True)])
+        self.footer = FormattedTextControl(self.get_footer_text)
         self.jobs: list[JobListing] = []
         self.current_job_index = 0 
         self.loading = False  # Initialize loading state 
-        # self.db = JobDatabase()  # Initialize database service
         self.page = 1
+
+        self.create_layout()
+
+    def create_layout(self):
+        art_height = len(ascii_art.splitlines())
+        header = HSplit([
+            Window(content=FormattedTextControl(ascii_art), height=art_height, always_hide_cursor=True),
+            Window(height=1, char="=", style="class:line"),
+        ])
+        
+        # Input form (use a Window for the dynamic main content)
+        form_content = HSplit([
+            Window(content=self.control, always_hide_cursor=True),
+        ])
+
+        # Footer
+        footer = HSplit([
+            Window(height=1, char="-", style="class:line"),
+            Window(content=self.footer, always_hide_cursor=True),
+        ])
+
+        # Combine header and form
+        self.container = HSplit([
+            header,
+            form_content,
+            footer
+        ])
 
     def on_show(self):
         # First, load existing jobs from database
@@ -79,24 +106,33 @@ class FindJobsScreen(Screen):
         from prompt_toolkit.application import get_app
         get_app().invalidate()
 
+    def get_footer_text(self):
+        frags = []
+
+        nav_info = f"Job {self.current_job_index + 1} of {len(self.jobs)} (showing last 50)"
+        nav_help = "\nPress [j] for next, [k] for previous, [r] to refresh, [q] to go back"
+        if len(self.jobs) == 0:
+            nav_info = "No jobs loaded"
+            nav_help = "\nPress [r] to refresh, [q] to go back"
+
+        frags.append(("", nav_info + nav_help))
+        return frags
+
     def render(self):
         frags = []
         
-        frags.append(("", ascii_art))
-        frags.append(("", "\n" + "="*self.line_len + "\n"))
-
         # Show database info
         total_jobs_in_db = self.db.get_job_count()
         frags.append(("", f"Database: {total_jobs_in_db} total jobs stored\n"))
 
         if self.loading:
             frags.append(("", "Loading new jobs...\n"))
-            frags.extend(self.get_default_controls())
+            # frags.extend(self.get_default_controls())
             return frags
 
         if not self.jobs:
             frags.append(("", "No jobs found. Press 'r' to refresh.\n"))
-            frags.extend(self.get_default_controls())
+            # frags.extend(self.get_default_controls())
             return frags
         
         if self.current_job_index >= len(self.jobs):
@@ -110,8 +146,9 @@ class FindJobsScreen(Screen):
         nav_help = "\nPress 'j' for next, 'k' for previous, 'r' to refresh, 'q' to go back"
         
         frags.append(("", job_text + "\n"))
-        frags.append(("", "\n" + "="*self.line_len))
-        frags.append(("", nav_info + nav_help))
+        # frags.append(("", "\n" + "="*self.line_len))
+        # frags.append(Window(height=1, char="-", style="class:line"))
+        # frags.append(("", nav_info + nav_help))
 
         return frags
        

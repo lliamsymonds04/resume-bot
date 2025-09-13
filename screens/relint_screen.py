@@ -39,11 +39,11 @@ class RelintScreen(Screen):
 
     def create_layout(self):
         # Header
-        header = Window(
-            content=FormattedTextControl(self.render_header),
-            height=10,
-            always_hide_cursor=True
-        )
+        art_height = len(ascii_art.splitlines())
+        header = HSplit([
+            Window(content=FormattedTextControl(ascii_art), height=art_height, always_hide_cursor=True),
+            Window(height=1, char="=", style="class:line"),
+        ])
         
         # Input form
         form_content = HSplit([
@@ -52,6 +52,7 @@ class RelintScreen(Screen):
             Label(text=""),  # Spacer
             self.status_label,
             Label(text=""),  # Spacer
+            Window(height=1, char="-", style="class:line"),
             Label(text="Press Enter to relint folder | Press Ctrl+C to clear | Press 'q' to go back"),
         ])
         

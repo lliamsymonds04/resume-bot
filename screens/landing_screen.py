@@ -34,7 +34,7 @@ class LandingScreen(Screen):
         # Input form (use a Window for the dynamic main content)
         form_content = HSplit([
             Label(text="Options:"),
-            Window(content=self.control, always_hide_cursor=True, height=len(self.options) + 2),
+            Window(content=self.control, always_hide_cursor=True, height=len(self.options) + 1),
             Window(height=1, char="-", style="class:line"),
             Label(text=self.get_default_controls()),
         ])
