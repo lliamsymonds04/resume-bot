@@ -7,6 +7,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel
+
 class Projects(BaseModel):
     projects: list[Project]
 
