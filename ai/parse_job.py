@@ -39,6 +39,7 @@ def parse_job_description(description: str) -> JobDescription:
 
     prompt = f"""
     Extract the following job description into a structured JSON.
+    Do not include anything like pty or ltd in the job title or company name.
     
     Format Instruction: {parser.get_format_instructions()}
 
