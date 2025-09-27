@@ -36,6 +36,9 @@ def create_resume_filling_prompt():
         **Coursework:**
         {coursework}
 
+        **Experience:**
+        {experience}
+
         **Instructions:**
 
         **Goal:** Generate a markdown resume.
@@ -46,10 +49,11 @@ def create_resume_filling_prompt():
         4.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
             Do not directly mention the company or the position title.
         5.  **Education:** Populate the `education` array with the relevant information from "My Data." Include the major. Include a summary of relevant coursework i have completed and the course code. Change it to fit the job description. Include no more than 4 courses.
-        6.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
-        7.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
-        8.  Always use \hrulefill to separate each sections.
-        9.  **Do NOT:**
+        6.  **Experience:** Populate the `experience` array with the tailored experiences. Use dotpoints to give points on each experience and put the links on a new line, horizontally. If there is no experience do not include this section.
+        7.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
+        8.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
+        9.  Always use \hrulefill to separate each sections.
+        10.  **Do NOT:**
             -   Add any extra text, explanations, or images or embedded images.
             -   Invent or hallucinate any information not present in the provided data.
 

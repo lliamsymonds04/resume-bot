@@ -2,6 +2,7 @@ import subprocess
 from models.job_description import JobDescription
 from ai.get_skills import get_relevant_skills
 from ai.tailor_projects import tailor_projects
+from ai.get_experience import tailor_experience
 from datetime import datetime
 import json
 import os
@@ -36,6 +37,8 @@ async def get_input_data(job_description: JobDescription):
     # tailor the projects
     tailored_projects = await tailor_projects(job_description, 3)
 
+    tailored_experiences = await tailor_experience(job_description)
+
     # load the me json
     with open("data/me.json", 'r', encoding='utf-8') as f:
         me_data = json.load(f)
@@ -50,6 +53,7 @@ async def get_input_data(job_description: JobDescription):
         "relevant_skills": relevant_skills,
         "tailored_projects": tailored_projects,
         "coursework": coursework,
+        "experience": tailored_experiences,
         "todays_date": get_date()
     }
 
