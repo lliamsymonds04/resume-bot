@@ -30,6 +30,9 @@ def cover_letter_prompt():
     Coursework:
     {coursework}
 
+    Experience:
+    {experience}
+
     Here is additional information about the company from the web search:
     {company_info}
 
@@ -68,14 +71,6 @@ def search_company(job_description: JobDescription):
         include_answer="basic"
     )
     return response.get("answer", job_description.company)
-
-class WritingStyleSpec(BaseModel):
-    tone: str = ""
-    sentence_length: str = "mixed"
-    paragraph_spacing: str = "double"
-    greeting_style: str = "Dear Hiring Team,"
-    signoff_style: str = "Sincerely, <Full Name>"
-    common_phrases: list = []
 
 async def make_cover_letter(input_data):
     # If caller passed an async coroutine for input_data, await it here.
