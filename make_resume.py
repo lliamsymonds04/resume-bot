@@ -1,9 +1,7 @@
-import json
 import os
-import subprocess
 from ai.parse_job import parse_job_description
 from ai.llm_config import get_llm
-from ai.resume_util import get_input_data, remove_code_block, save_md_to_pdf
+from ai.resume_util import remove_code_block, save_md_to_pdf
 from models.job_description import JobDescription
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -94,7 +92,10 @@ def fix_resume_formatting(resume: str) -> str:
     return remove_code_block(result)
 
 def get_resume_format_args():
-    return ["-V", "fontSize=10pt"]
+    return [
+        "-V", "fontSize=10pt",
+        "-V", "linestretch=0.9"
+    ]
 
 def save_resume(resume: str, company_name: str, keep_md = False):
     save_md_to_pdf(resume, company_name, "resume", keep_md, get_resume_format_args())
