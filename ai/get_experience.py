@@ -20,6 +20,7 @@ def generate_tailor_experience_prompt():
     return """
     You are an expert resume writer.
     Given the following job description, tailor the following experience to better match the job description.
+    Return all the experiences as a JSON array.
 
     # Job Description:
     {job_description}
@@ -29,6 +30,8 @@ def generate_tailor_experience_prompt():
 
     # Format instructions:
     {format_instructions}
+
+    IMPORTANT: Wrap the output in a JSON list, even if there is only one experience.
     """
 
 async def tailor_experience(job_description: JobDescription):

@@ -52,15 +52,15 @@ def cover_letter_prompt():
     - Use two lines to separate paragraphs.
     - Use the two spaces at the end of a line to separate lines
     - End with a courteous sign-off (e.g., “Sincerely,”) and the candidate’s full name. Make sure the sign-off and the name are on different lines using two spaces
-    - Do not use em-dashes (—) or special characters. Do not use any common giveaways of AI-generated text like "I am excited to apply..." or "Based on the job description..." or "foundation" or "With a..."
+    - Do not use em-dashes (—). 
+    - Only include the date and the address to the hiring team once.
 
     Additional Notes:
     {additional_notes}
 
-    Example Cover Letter i want you to mimic in style and tone:
-    {example_cover_letter}
+    # Example Cover Letter i want you to mimic in style and tone:
+        {example_cover_letter}
     """)
-
     return prompt
 
 def search_company(job_description: JobDescription):
@@ -83,7 +83,7 @@ async def make_cover_letter(input_data):
         example_cover_letter = f.read()
 
     # Call the LLM with the prompt and return the response
-    llm = get_llm(0.3, "good")
+    llm = get_llm(0.3)
     chain = cover_letter_prompt_instance | llm | StrOutputParser()
 
     run_input = dict(input_data)
