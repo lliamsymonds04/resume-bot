@@ -1,13 +1,12 @@
 import asyncio
 import os
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from dotenv import load_dotenv
 from models.job_description import JobDescription
 from ai.resume_util import get_input_data, remove_code_block, save_md_to_pdf
 from ai.llm_config import get_llm
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.output_parsers import PydanticOutputParser
 from tavily import TavilyClient
 
 def cover_letter_prompt():
