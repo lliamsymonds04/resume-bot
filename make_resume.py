@@ -48,7 +48,7 @@ def create_resume_filling_prompt():
             Do not directly mention the company or the position title.
         5.  **Education:** Populate the `education` array with the relevant information from "My Data." Include the major. Include a summary of relevant coursework i have completed and the course code. Change it to fit the job description. Include no more than 4 courses.
         6.  **Experience:** Populate the `experience` array with the tailored experiences. Use dotpoints to give points on each experience and put the links on a new line, horizontally. If there is no experience do not include this section.
-        7.  **Skills:** make dotpoints containing the relevant skills categorised. Use the categories given. Fill them horizontally to save space
+        7.  **Skills:** using the 'relevant_skills' provided and the categories, populate each category horizontally. Separate each skill with a comma. Do not use bullet points.
         8.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
         9.  Always use \hrulefill to separate each sections.
         10.  **Do NOT:**
@@ -92,9 +92,21 @@ def fix_resume_formatting(resume: str) -> str:
     return remove_code_block(result)
 
 def get_resume_format_args():
+    header_includes = r"""
+    \renewcommand{\baselinestretch}{0.9}
+    \setlength{\parskip}{0pt}
+    \setlength{\itemsep}{0pt}
+    \setlength{\topsep}{0pt}
+    \setlength{\partopsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \setlength{\leftmargini}{15pt}
+    \setlength{\leftmarginii}{10pt}
+    \newcommand{\tighthrule}{\hrulefill\vspace{-0.6em}}
+    """ 
+
     return [
-        "-V", "fontSize=10pt",
-        "-V", "linestretch=0.9"
+        "-V", "fontsize=10pt",
+        "-V", f"header-includes={header_includes}"
     ]
 
 def save_resume(resume: str, company_name: str, keep_md = False):
