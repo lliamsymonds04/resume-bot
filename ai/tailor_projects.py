@@ -20,9 +20,7 @@ def generate_project_prompt():
     Focus on projects that best align with the skills, experiences, and requirements outlined in the job description.
     Also, expand on the project to make it more relevant to the job description.
     Do not change the title. Do not lie about my skills or process
-    Do not talk about programming languages or tools that i did not use.
-    Always mention the programming languages and the tools
-    Keep the description concise and focused on the key aspects. It is for a resume
+    Always mention the programming languages and the tools used
     Do not talk about external teams or stakeholders if none are mentioned
     
     Job Description:

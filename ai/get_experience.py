@@ -1,12 +1,12 @@
 from ai.llm_config import get_llm
 from models.job_description import JobDescription
 from models.experience import Experience
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 from langchain_core.output_parsers import PydanticOutputParser
 import json
 
-class Experiences(BaseModel):
-    experiences: list[Experience]
+class Experiences(RootModel[list[Experience]]):
+    pass
 
 experience_parser = PydanticOutputParser(pydantic_object=Experiences)  
 
@@ -20,28 +20,28 @@ def generate_tailor_experience_prompt():
     return """
     You are an expert resume writer.
     Given the following job description, tailor the following experience to better match the job description.
-    Return all the experiences. Order them by Descending order of time period.
 
     # Job Description:
     {job_description}
 
-    # Experience:
-    {experience}
+    # Experiences:
+    {experiences}
 
     # Format instructions:
     {format_instructions}
     """
 
 async def tailor_experience(job_description: JobDescription):
-    experience = get_experience()
+    experiences = get_experience()
     
     prompt = generate_tailor_experience_prompt()
     llm = get_llm(0.3)
 
     response = await llm.ainvoke(prompt.format(
         job_description=job_description.model_dump(),
-        experience=json.dumps(experience, indent=2),
+        experiences=json.dumps(experiences, indent=2),
         format_instructions=experience_parser.get_format_instructions()
     ))
 
-    return experience_parser.parse(response.content).experiences
+    parsed = experience_parser.parse(response.content)
+    return parsed.root
