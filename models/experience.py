@@ -6,4 +6,4 @@ class Experience(BaseModel):
     description: str
     role: Optional[str] = None
     time_period: Optional[str] = None
-    website: Optional[str] = None
+    link: Optional[str] = None

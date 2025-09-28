@@ -47,9 +47,9 @@ def create_resume_filling_prompt():
         4.  **Summary:** Re-write the `summary` section from "My Data" to be concise and directly relevant to the job description. Highlight key skills and experiences mentioned in the job post.
             Do not directly mention the company or the position title.
         5.  **Education:** Populate the `education` array with the relevant information from "My Data." Include the major. Include a summary of relevant coursework i have completed and the course code. Change it to fit the job description. Include no more than 4 courses.
-        6.  **Experience:** Populate the `experience` array with the tailored experiences. Use dotpoints to give points on each experience and put the links on a new line, horizontally. If there is no experience do not include this section. Include a website link if it is given and relevant.
+        6.  **Experience:** Populate the `experience` array with the tailored experiences. Use dotpoints to give points on each experience and put the links on a new line, horizontally. If there is no experience do not include this section. Include a link ONLY if it is given and relevant.
         7.  **Skills:** using the 'relevant_skills' provided and the categories, populate each skill category horizontally. Make the skill category name bold. Separate each skill with a comma. Do not use bullet points. End each line with a space and a backslash to make a new line.
-        8.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally
+        8.  **Projects:** Populate the `projects` array with the provided "Tailored Projects." Use dotpoints to give points on each project and put the links on a new line, horizontally. Make each project name bolded.
         9.  Always use \hrulefill to separate each sections. Make each section a h2 header (##).
         10.  **Do NOT:**
             -   Add any extra text, explanations, or images or embedded images.
@@ -106,6 +106,7 @@ def get_resume_format_args():
 
     return [
         "-V", "fontsize=10pt",
+        "-V", "mainfont=Arial", 
         "-V", f"header-includes={header_includes}"
     ]
 

@@ -82,13 +82,6 @@ class RelintScreen(Screen):
             form_content
         ])
 
-    def render_header(self):
-        frags = []
-        frags.append(("", ascii_art))
-        frags.append(("", "\n" + "="*self.line_len + "\n"))
-        frags.append(("", "Use to update pdfs from markdown if self-edits were made.\n"))
-        return frags
-
     def layout(self):
         return Layout(self.container)
 
@@ -145,7 +138,7 @@ class RelintScreen(Screen):
         @kb.add("enter")
         def _(event):
             # get the job name from the input
-            job_name = self.job_input.text.strip()
+            job_name = self.job_buffer.text.strip()
             if not job_name:
                 self.status_label.text = "Please enter a job name"
                 self.redraw()
