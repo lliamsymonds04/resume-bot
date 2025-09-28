@@ -154,6 +154,8 @@ class RelintScreen(Screen):
                 self.status_label.text = "Please enter a job name"
                 self.redraw()
                 return
+            
+            self.status_label.text = ""
 
             asyncio.ensure_future(self.relint(job_name))
 
