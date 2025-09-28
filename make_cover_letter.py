@@ -97,7 +97,22 @@ async def make_cover_letter(input_data):
     return result
 
 def get_cover_letter_format_args():
-    return ["-V", "fontSize=11pt"]
+    header_includes = r"""
+    \renewcommand{\baselinestretch}{1.15}
+    \setlength{\parskip}{12pt}
+    \setlength{\parindent}{0pt}
+    \setlength{\itemsep}{6pt}
+    \setlength{\topsep}{6pt}
+    \setlength{\partopsep}{3pt}
+    \setlength{\parsep}{3pt}
+    \setlength{\leftmargini}{20pt}
+    \setlength{\leftmarginii}{15pt}
+    """
+    return [
+        "-V", "fontsize=11pt",
+        "-V", "mainfont=Times New Roman",
+        "-V", f"header-includes={header_includes}"
+    ]
 
 def save_cover_letter(cover_letter: str, company_name: str, keep_md = False):
     save_md_to_pdf(cover_letter, company_name, "cover-letter", keep_md, get_cover_letter_format_args())
