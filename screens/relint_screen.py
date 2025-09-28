@@ -1,8 +1,5 @@
 import asyncio
 import os
-import logging
-import subprocess
-import platform
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
@@ -12,7 +9,7 @@ from prompt_toolkit.buffer import Buffer
 from screens.screen_base import Screen
 from make_resume import get_resume_format_args
 from make_cover_letter import get_cover_letter_format_args
-from ai.resume_util import get_output_path, save_pdf, get_md_path
+from ai.resume_util import get_output_path, save_pdf, get_md_path, open_job_output_folder
 
 ascii_art = r"""
 __________       .__  .__        __   
@@ -75,7 +72,7 @@ class RelintScreen(Screen):
             self.status_label,
             Label(text=""),  # Spacer
             Window(height=1, char="-", style="class:line"),
-            Label(text="Press Enter to relint folder | Press Ctrl+C to clear | Press 'q' to go back"),
+            Label(text="[Enter] to relint folder | [Ctrl+C] to clear | [Ctrl+Q] to go back"),
         ])
         
         # Combine header and form
@@ -144,7 +141,7 @@ class RelintScreen(Screen):
     def keybindings(self, app_state=None):
         kb = KeyBindings()
 
-        @kb.add("q")
+        @kb.add("c-q")
         def _(event):
             self.clear_input()
             app_state.switch_screen("landing")
@@ -168,27 +165,8 @@ class RelintScreen(Screen):
 
         @kb.add("c-o")  # Ctrl+O
         def _(event):
-            if self.job_name == "":
-                return
-
-            # Open output folder
-            output_path = get_output_path(self.job_name)
-            base_path = output_path["base_path"]
-
-            #convert to absolute path
-            base_path = os.path.abspath(base_path)
-            
-            # open the output folder in explorer
-            system = platform.system()
-            try:
-                if system == "Windows":
-                    os.startfile(base_path)  # built-in Windows API
-                elif system == "Darwin":  # macOS
-                    subprocess.run(["open", base_path])
-                else:  # assume Linux/Unix
-                    subprocess.run(["xdg-open", base_path])
-            except Exception as e:
-                print(f"Could not open folder: {e}")
+            if self.job_name != "":
+                open_job_output_folder(self.job_name)
 
         return kb
 

@@ -6,7 +6,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.widgets import Label, TextArea
-from ai.resume_util import get_input_data, get_output_path
+from ai.resume_util import get_input_data, get_output_path, open_job_output_folder
 from make_cover_letter import make_cover_letter, save_cover_letter
 from make_resume import save_resume, make_resume
 from screens.screen_base import Screen
@@ -127,23 +127,9 @@ class ApplyScreen(Screen):
 
             asyncio.create_task(self.process_application(self.job_description, notes))
 
-        kb.add("c-o")(lambda event: event.app.exit())  # Ctrl-O to open the output folder
+        kb.add("c-o")
         def _(event):
-            # get the path of the output folder
-            output_path = get_output_path()
-            base_path = output_path["base_path"]
-            
-            # open the output folder in explorer
-            system = platform.system()
-            try:
-                if system == "Windows":
-                    os.startfile(base_path)  # built-in Windows API
-                elif system == "Darwin":  # macOS
-                    subprocess.run(["open", base_path])
-                else:  # assume Linux/Unix
-                    subprocess.run(["xdg-open", base_path])
-            except Exception as e:
-                print(f"Could not open folder: {e}")
+            open_job_output_folder(self.job_description.company)
             
 
         return kb

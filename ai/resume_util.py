@@ -1,4 +1,5 @@
 import subprocess
+import platform
 from models.job_description import JobDescription
 from ai.get_skills import get_relevant_skills
 from ai.tailor_projects import tailor_projects
@@ -115,3 +116,22 @@ def save_md_to_pdf(md: str, company_name: str, tail_name: str, keep_md: bool, ad
     # delete the markdown file
     if not keep_md:
         os.remove(md_file_path)
+
+
+def open_job_output_folder(job_name: str):
+    # Open output folder
+    output_path = get_output_path(job_name)
+    base_path = output_path["base_path"]
+    base_path = os.path.abspath(base_path)
+    
+    # open the output folder in explorer
+    system = platform.system()
+    try:
+        if system == "Windows":
+            os.startfile(base_path)  # built-in Windows API
+        elif system == "Darwin":  # macOS
+            subprocess.run(["open", base_path])
+        else:  # assume Linux/Unix
+            subprocess.run(["xdg-open", base_path])
+    except Exception as e:
+        print(f"Could not open folder: {e}")
