@@ -83,7 +83,7 @@ async def make_cover_letter(input_data):
         example_cover_letter = f.read()
 
     # Call the LLM with the prompt and return the response
-    llm = get_llm(0.3)
+    llm = get_llm(0.3, "good")
     chain = cover_letter_prompt_instance | llm | StrOutputParser()
 
     run_input = dict(input_data)

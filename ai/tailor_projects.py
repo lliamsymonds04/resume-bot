@@ -101,6 +101,7 @@ async def expand_project_for_job(job_description: JobDescription, project: Proje
     Always mention the programming languages and the tools
     Keep the description concise and focused on the key aspects. It is for a resume
     Do not talk about external teams or stakeholders if none are mentioned
+    Talk about the cloud technologies used if present in the project
 
     Format instructions:
     {parser.get_format_instructions()}
