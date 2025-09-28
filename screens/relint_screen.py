@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 from prompt_toolkit.key_binding import KeyBindings
@@ -6,6 +7,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
 from prompt_toolkit.widgets import TextArea, Label
 from prompt_toolkit.completion import WordCompleter, FuzzyCompleter
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.application import get_app
 from screens.screen_base import Screen
 from make_resume import get_resume_format_args
 from make_cover_letter import get_cover_letter_format_args
@@ -85,43 +87,53 @@ class RelintScreen(Screen):
     def layout(self):
         return Layout(self.container)
 
-    def relint(self, job_name):
+    async def relint(self, job_name):
         job_name = job_name.strip().lower().replace(" ", "-")
+        output_path = get_output_path(job_name)
 
-        output_path = get_output_path(job_name) 
+        loop = asyncio.get_event_loop()
 
-        # First try to relint the resume
-        relint_success = False
-        try:
-            self.add_line_to_status("• Relinting resume...")
-            tail_name = "resume"
-            md_file_path = get_md_path(output_path["base_path"], tail_name)
-            #check the markdown exists
-            if not os.path.exists(md_file_path):
-                raise FileNotFoundError(f"Markdown file not found: {md_file_path}")
-            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_resume_format_args())
-            self.add_line_to_status("✓ Resume relinted successfully!\n")
-            relint_success = True
-        except Exception as e:
-            logging.error(f"Error relinting resume: {e}")
-            self.add_line_to_status(f"Error relinting resume: {e}\n")
-            self.redraw()
+        # Relint resume
+        self.add_line_to_status("• Relinting resume...")
 
-        if not relint_success:
+        tail_name = "resume"
+        md_file_path = get_md_path(output_path["base_path"], tail_name)
+
+        if not os.path.exists(md_file_path):
+            self.add_line_to_status(f"✗ Markdown file not found: {md_file_path}\n")
             return
 
-        # Then try to relint the cover letter
         try:
-            self.add_line_to_status("• Relinting cover letter...")
-            tail_name = "cover-letter"
-            md_file_path = get_md_path(output_path["base_path"], tail_name)
-            save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_cover_letter_format_args())
+            await loop.run_in_executor(
+                None,
+                lambda: save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_resume_format_args())
+            )
+            self.add_line_to_status("✓ Resume relinted successfully!\n")
+        except Exception as e:
+            self.add_line_to_status(f"✗ Error relinting resume: {e}\n")
+            return
+
+        # Relint cover letter
+        self.add_line_to_status("• Relinting cover letter...")
+
+        tail_name = "cover-letter"
+        md_file_path = get_md_path(output_path["base_path"], tail_name)
+
+        if not os.path.exists(md_file_path):
+            self.add_line_to_status(f"✗ Markdown file not found: {md_file_path}\n")
+            return
+
+        try:
+            await loop.run_in_executor(
+                None,
+                lambda: save_pdf(md_file_path, output_path["base_path"], output_path["user_name"], tail_name, get_cover_letter_format_args())
+            )
             self.add_line_to_status("✓ Cover letter relinted successfully!\n")
         except Exception as e:
-            logging.error(f"Error relinting cover letter: {e}")
-            self.add_line_to_status(f"Error relinting cover letter: {e}\n")
+            self.add_line_to_status(f"✗ Error relinting cover letter: {e}\n")
+            return
 
-        self.add_line_to_status(f"✓ All done! Check the output folder for your files.")
+        self.add_line_to_status("✓ All done! Check the output folder for your files.")
 
     def clear_input(self):
         self.job_input.text = ""
@@ -144,8 +156,7 @@ class RelintScreen(Screen):
                 self.redraw()
                 return
 
-            self.relint(job_name)
-            pass
+            asyncio.ensure_future(self.relint(job_name))
 
         @kb.add("c-c")  # Ctrl+C
         def _(event):
