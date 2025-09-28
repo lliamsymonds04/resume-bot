@@ -1,13 +1,14 @@
 import asyncio
 import os
 import logging
+import subprocess
+import platform
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
-from prompt_toolkit.widgets import TextArea, Label
+from prompt_toolkit.widgets import Label
 from prompt_toolkit.completion import WordCompleter, FuzzyCompleter
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.application import get_app
 from screens.screen_base import Screen
 from make_resume import get_resume_format_args
 from make_cover_letter import get_cover_letter_format_args
@@ -35,7 +36,7 @@ def get_company_names():
 class RelintScreen(Screen):
     def __init__(self):
         super().__init__("relint")
-        self.line_len = 75
+        self.job_name = ""
 
         company_names = get_company_names()
         company_completer = FuzzyCompleter(WordCompleter(company_names, ignore_case=True))
@@ -89,6 +90,7 @@ class RelintScreen(Screen):
 
     async def relint(self, job_name):
         job_name = job_name.strip().lower().replace(" ", "-")
+        self.job_name = job_name
         output_path = get_output_path(job_name)
 
         loop = asyncio.get_event_loop()
@@ -164,9 +166,34 @@ class RelintScreen(Screen):
             self.clear_input()
             self.redraw()
 
+        @kb.add("c-o")  # Ctrl+O
+        def _(event):
+            if self.job_name == "":
+                return
+
+            # Open output folder
+            output_path = get_output_path(self.job_name)
+            base_path = output_path["base_path"]
+
+            #convert to absolute path
+            base_path = os.path.abspath(base_path)
+            
+            # open the output folder in explorer
+            system = platform.system()
+            try:
+                if system == "Windows":
+                    os.startfile(base_path)  # built-in Windows API
+                elif system == "Darwin":  # macOS
+                    subprocess.run(["open", base_path])
+                else:  # assume Linux/Unix
+                    subprocess.run(["xdg-open", base_path])
+            except Exception as e:
+                print(f"Could not open folder: {e}")
+
         return kb
 
     def on_show(self):
         from prompt_toolkit.application import get_app
         self.clear_input()
+        self.job_name = ""
         get_app().layout.focus(self.job_input)
