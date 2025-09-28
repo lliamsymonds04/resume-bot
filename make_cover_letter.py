@@ -8,6 +8,7 @@ from ai.llm_config import get_llm
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from tavily import TavilyClient
+from models.format_settings import get_format_settings
 
 def cover_letter_prompt():
     prompt = ChatPromptTemplate.from_template("""
@@ -97,20 +98,23 @@ async def make_cover_letter(input_data):
     return result
 
 def get_cover_letter_format_args():
-    header_includes = r"""
-    \renewcommand{\baselinestretch}{1.15}
-    \setlength{\parskip}{12pt}
-    \setlength{\parindent}{0pt}
-    \setlength{\itemsep}{6pt}
-    \setlength{\topsep}{6pt}
-    \setlength{\partopsep}{3pt}
-    \setlength{\parsep}{3pt}
-    \setlength{\leftmargini}{20pt}
-    \setlength{\leftmarginii}{15pt}
+    format_settings = get_format_settings("cover_letter")
+
+    header_includes = fr"""
+    \renewcommand{{\baselinestretch}}{{{format_settings.font_stretch}}}
+    \setlength{{\parskip}}{{12pt}}
+    \setlength{{\parindent}}{{0pt}}
+    \setlength{{\itemsep}}{{6pt}}
+    \setlength{{\topsep}}{{6pt}}
+    \setlength{{\partopsep}}{{3pt}}
+    \setlength{{\parsep}}{{3pt}}
+    \setlength{{\leftmargini}}{{20pt}}
+    \setlength{{\leftmarginii}}{{15pt}}
     """
+
     return [
-        "-V", "fontsize=11pt",
-        "-V", "mainfont=Times New Roman",
+        "-V", f"fontsize={format_settings.font_size}pt",
+        "-V", f"mainfont={format_settings.font}",
         "-V", f"header-includes={header_includes}"
     ]
 

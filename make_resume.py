@@ -2,9 +2,9 @@ import os
 from ai.parse_job import parse_job_description
 from ai.llm_config import get_llm
 from ai.resume_util import remove_code_block, save_md_to_pdf
-from models.job_description import JobDescription
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from models.format_settings import get_format_settings
 
 from util.text_util import load_text
 
@@ -92,21 +92,23 @@ def fix_resume_formatting(resume: str) -> str:
     return remove_code_block(result)
 
 def get_resume_format_args():
-    header_includes = r"""
-    \renewcommand{\baselinestretch}{0.8}
-    \setlength{\parskip}{0pt}
-    \setlength{\itemsep}{0pt}
-    \setlength{\topsep}{0pt}
-    \setlength{\partopsep}{0pt}
-    \setlength{\parsep}{0pt}
-    \setlength{\leftmargini}{15pt}
-    \setlength{\leftmarginii}{10pt}
-    \newcommand{\tighthrule}{\hrulefill\vspace{-0.6em}}
-    """ 
+    format_settings = get_format_settings("resume")
+
+    header_includes = rf"""
+    \renewcommand{{\baselinestretch}}{{{format_settings.font_stretch}}}
+    \setlength{{\parskip}}{{0pt}}
+    \setlength{{\itemsep}}{{0pt}}
+    \setlength{{\topsep}}{{0pt}}
+    \setlength{{\partopsep}}{{0pt}}
+    \setlength{{\parsep}}{{0pt}}
+    \setlength{{\leftmargini}}{{15pt}}
+    \setlength{{\leftmarginii}}{{10pt}}
+    \newcommand{{\tighthrule}}{{\hrulefill\vspace{{-0.6em}}}}
+    """
 
     return [
-        "-V", "fontsize=10pt",
-        "-V", "mainfont=Arial", 
+        "-V", f"fontsize={format_settings.font_size}pt",
+        "-V", f"mainfont={format_settings.font}",
         "-V", f"header-includes={header_includes}"
     ]
 
