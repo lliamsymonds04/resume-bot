@@ -2,8 +2,10 @@ import os
 import logging
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
 from prompt_toolkit.widgets import TextArea, Label
+from prompt_toolkit.completion import WordCompleter, FuzzyCompleter
+from prompt_toolkit.buffer import Buffer
 from screens.screen_base import Screen
 from make_resume import get_resume_format_args
 from make_cover_letter import get_cover_letter_format_args
@@ -18,17 +20,34 @@ __________       .__  .__        __
         \/     \/             \/     
 """
 
+def get_company_names():
+    base_path = os.path.join(os.path.dirname(__file__), "..", "output")
+    base_path = os.path.abspath(base_path)  # normalize
+    if not os.path.exists(base_path):
+        return []
+    return [
+        name for name in os.listdir(base_path)
+        if os.path.isdir(os.path.join(base_path, name))
+    ]
+
 class RelintScreen(Screen):
     def __init__(self):
         super().__init__("relint")
         self.line_len = 75
-        
-        self.job_input = TextArea(
-            text="",
+
+        company_names = get_company_names()
+        company_completer = FuzzyCompleter(WordCompleter(company_names, ignore_case=True))
+
+        self.job_buffer = Buffer(
+            completer=company_completer,
+            complete_while_typing=True
+        )
+
+        # instead of TextArea, use Window+BufferControl
+        self.job_input = Window(
+            content=BufferControl(buffer=self.job_buffer),
             height=1,
-            multiline=False,
-            scrollbar=False,
-            wrap_lines=True
+            always_hide_cursor=False
         )
         
         # Status display
