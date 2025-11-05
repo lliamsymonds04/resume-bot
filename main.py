@@ -8,6 +8,7 @@ from screens.relint_screen import RelintScreen
 from screens.apply_screen import ApplyScreen
 from services.job_database import JobDatabase
 
+
 class AppState:
     def __init__(self, app, db):
         self.app = app
@@ -28,9 +29,10 @@ class AppState:
         if hasattr(screen, "on_show"):
             screen.on_show(**kwargs)
 
+
 # initialize database
 db = JobDatabase()
-db.clear_old_jobs() 
+db.clear_old_jobs()
 
 # start app
 app = Application(full_screen=True)
@@ -41,15 +43,24 @@ landing_screen = LandingScreen()
 config_screen = ConfigScreen()
 find_jobs_screen = FindJobsScreen()
 manual_apply_screen = ManualApplyScreen()
-relint_screen = RelintScreen() 
+relint_screen = RelintScreen()
 job_description_screen = JobDescriptionScreen()
 apply_screen = ApplyScreen()
 
 # add screens
-screens = [landing_screen, config_screen, find_jobs_screen, manual_apply_screen, relint_screen, job_description_screen, apply_screen] 
+screens = [
+    landing_screen,
+    config_screen,
+    find_jobs_screen,
+    manual_apply_screen,
+    relint_screen,
+    job_description_screen,
+    apply_screen,
+]
 for screen in screens:
     app_state.add_screen(screen)
-    
+
 # init
 app_state.switch_screen("landing")
 app.run()
+
